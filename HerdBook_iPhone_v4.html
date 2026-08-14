@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f6f3ed">
+<title>HerdBook</title>
+<style>
+:root{--bg:#f6f3ed;--card:#fff;--ink:#22221e;--muted:#77736c;--line:#e2ddd4;--accent:#2f4a32;--accent2:#e9efe7;--danger:#a7352d;--edit:#596b7d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{min-height:100vh}.app{width:100%;max-width:520px;margin:auto;min-height:100vh;background:var(--bg);padding-bottom:94px}
+.header{padding:calc(16px + env(safe-area-inset-top)) 18px 12px}.brand{font-size:30px;font-weight:850;letter-spacing:-.7px}.sub{color:var(--muted);font-size:14px;margin-top:3px}
+main{padding:0 15px}.screen{display:none}.screen.active{display:block}.title{font-size:25px;margin:9px 3px 14px;font-weight:850}.toprow{display:flex;justify-content:space-between;align-items:center;gap:9px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px}.stat b{font-size:28px;display:block}.stat span{font-size:13px;color:var(--muted)}
+.section-title{font-size:18px;font-weight:800;margin:22px 3px 10px}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.qbtn{min-height:78px;border:1px solid var(--line);background:var(--card);border-radius:17px;font-weight:750;font-size:15px;text-align:left;padding:14px}.qbtn .ico{font-size:27px;display:block;margin-bottom:6px}
+.primary,.secondary,.danger{min-height:50px;border-radius:15px;padding:0 16px;border:0;font-weight:800}.primary{background:var(--accent);color:white}.secondary{background:var(--card);border:1px solid var(--line)}.danger{background:var(--danger);color:#fff}.full{width:100%}
+.search{width:100%;height:52px;border:1px solid var(--line);background:white;border-radius:15px;padding:0 16px;font-size:17px;margin-bottom:9px;outline:none}
+.filters{display:flex;gap:7px;overflow:auto;padding-bottom:3px}.chip{border:1px solid var(--line);background:white;border-radius:20px;padding:9px 12px;white-space:nowrap;font-size:13px;font-weight:700}.chip.on{background:var(--accent2);color:var(--accent);border-color:#cbd9c8}
+.rowwrap{position:relative;overflow:hidden;border-radius:17px;margin:9px 0}.swipe-actions{position:absolute;inset:0;display:flex;justify-content:space-between}.swipe-actions button{width:86px;border:0;color:white;font-weight:800;font-size:13px}.edit-bg{background:var(--edit)}.delete-bg{background:var(--danger);margin-left:auto}
+.animal{position:relative;background:white;border:1px solid var(--line);border-radius:17px;padding:14px 15px;min-height:83px;transition:transform .16s ease;z-index:2;touch-action:pan-y}.animal:active{transform:scale(.985)}.animal .check{float:left;width:27px;height:27px;margin:2px 10px 0 0;border:2px solid #cfcac1;border-radius:8px;background:white}.animal .check.on{background:var(--accent);border-color:var(--accent);color:white;text-align:center;line-height:23px}.aname{font-size:18px;font-weight:800}.meta{color:var(--muted);font-size:13px;margin-top:4px}.badge{float:right;background:var(--accent2);padding:6px 9px;border-radius:20px;font-size:12px;font-weight:700}.tagdot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:1px;border:1px solid rgba(0,0,0,.15)}
+.detail-card{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.detail-name{font-size:27px;font-weight:850}.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.fact{background:var(--bg);padding:11px;border-radius:12px}.fact small{display:block;color:var(--muted);font-size:12px}.fact b{font-size:15px}
+.timeline{margin:15px 0}.event{position:relative;margin-left:8px;border-left:2px solid #d9d5cc;padding:0 0 18px 20px}.event:before{content:"";position:absolute;left:-6px;top:2px;width:10px;height:10px;background:var(--accent);border-radius:50%}.event b{font-size:15px}.event small{display:block;color:var(--muted);margin:3px 0 6px}.event p{margin:0;background:white;border:1px solid var(--line);padding:11px;border-radius:12px}
+.navbar{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:auto;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:7px 5px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);z-index:20}.nav{border:0;background:none;color:#817d75;min-height:57px;font-size:11px;font-weight:700;border-radius:13px}.nav .ico{display:block;font-size:21px;margin-bottom:3px}.nav.active{color:var(--accent);background:#f0f4ef}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:50;align-items:flex-end}.overlay.show{display:flex}.sheet{width:100%;max-width:520px;margin:auto;background:white;border-radius:23px 23px 0 0;padding:15px 17px calc(18px + env(safe-area-inset-bottom));max-height:94vh;overflow:auto}.grab{width:42px;height:5px;background:#d5d1c9;border-radius:9px;margin:0 auto 15px}.sheet h2{font-size:23px;margin-bottom:12px}
+label{display:block;color:var(--muted);font-size:13px;font-weight:650;margin:12px 2px 5px}input,select,textarea{width:100%;height:52px;border:1px solid var(--line);border-radius:13px;padding:0 13px;background:#faf9f6;font-size:17px;outline:none}textarea{height:100px;padding-top:12px;resize:none}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+.picker{border:1px solid var(--line);border-radius:15px;padding:9px;background:#faf9f6}.picker input{height:45px;background:white;margin-bottom:7px}.picklist{max-height:270px;overflow:auto}.pickrow{display:flex;align-items:center;gap:9px;padding:11px 5px;border-bottom:1px solid var(--line);font-size:15px}.pickrow:last-child{border:0}.pickrow input{width:24px;height:24px;margin:0}.small{font-size:12px;color:var(--muted)}
+.group{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;margin:9px 0}.group b{font-size:18px}.group .count{float:right;background:var(--bg);border-radius:20px;padding:6px 10px;font-size:12px;font-weight:800}
+.massbar{position:fixed;bottom:81px;left:50%;transform:translateX(-50%);width:min(490px,calc(100% - 22px));background:#222;color:white;border-radius:18px;padding:9px;display:none;grid-template-columns:1.2fr 1fr 1fr;gap:7px;z-index:30;box-shadow:0 5px 24px rgba(0,0,0,.22)}.massbar.show{display:grid}.massbar button{min-height:48px;border:0;border-radius:12px;font-weight:800}.massbar .masscount{background:#222;color:white;text-align:left;padding:0 8px}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}.hint{font-size:12px;color:var(--muted);margin:5px 3px 0}
+.toast{position:fixed;z-index:100;left:50%;bottom:150px;transform:translateX(-50%);background:#222;color:white;padding:12px 17px;border-radius:22px;display:none;font-weight:700;font-size:14px;white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="header"><div class="brand">🐄 HerdBook</div><div class="sub">Your cattle record book</div></header>
+<main>
+<section id="home" class="screen active">
+<div class="title">My Herd</div>
+<div class="grid2"><div class="stat"><b id="count">0</b><span>Animals</span></div><div class="stat"><b id="calves">0</b><span>Calves this year</span></div></div>
+<div class="section-title">Quick Record</div>
+<div class="quick">
+<button class="qbtn" data-action="Treatment"><span class="ico">💊</span>Treat animals</button>
+<button class="qbtn" data-action="Vaccination"><span class="ico">💉</span>Vaccinate</button>
+<button class="qbtn" data-action="Calving"><span class="ico">🐮</span>Calving</button>
+<button class="qbtn" data-action="Breeding"><span class="ico">🤰</span>Breed heifers/cows</button>
+<button class="qbtn" data-action="Weight"><span class="ico">⚖️</span>Record weights</button>
+<button class="qbtn" data-action="Note"><span class="ico">📝</span>Add note</button>
+</div>
+<div class="section-title">Recent Activity</div><div id="recent"></div>
+</section>
+
+<section id="herd" class="screen">
+<div class="toprow"><div class="title">My Animals</div><div style="display:flex;gap:6px"><button class="secondary" id="selectBtn">Select</button><button class="primary" id="addBtn">＋ Add</button></div></div>
+<input id="search" class="search" type="search" placeholder="Search tag, breed, status…">
+<div class="filters"><button class="chip on" data-filter="All">All</button><button class="chip" data-filter="Cow">Cows</button><button class="chip" data-filter="Heifer">Heifers</button><button class="chip" data-filter="Bull">Bulls</button><button class="chip" data-filter="Calf">Calves</button></div>
+<div class="hint">Swipe a row <b>right to edit</b> or <b>left to delete</b>.</div>
+<div id="animals"></div>
+</section>
+
+<section id="groups" class="screen">
+<div class="toprow"><div class="title">Groups & Pastures</div><button class="primary" id="addGroupBtn">＋ Group</button></div>
+<div class="detail-card"><b>Move cattle together</b><div class="meta">Create groups such as North Pasture, Calving Pen, Replacement Heifers, or Sale Cattle. Add or remove one animal or many at once.</div></div>
+<div id="groupsList"></div>
+</section>
+
+<section id="detail" class="screen"><div id="detailBody"></div></section>
+<section id="more" class="screen">
+<div class="title">More</div>
+<div class="detail-card"><b>Prototype</b><p class="meta">Your entries are saved in this browser on this device.</p></div>
+<div class="detail-card"><b>Planned next</b><p class="meta">Photos · medication withdrawal dates · breeding calendar · reports · cloud backup · multiple users · cattle import/export</p></div>
+<button class="secondary full" id="reset">Reset sample data</button>
+</section>
+</main>
+
+<nav class="navbar">
+<button class="nav active" data-go="home"><span class="ico">⌂</span>Home</button>
+<button class="nav" data-go="herd"><span class="ico">🐄</span>Herd</button>
+<button class="nav" data-go="groups"><span class="ico">▦</span>Groups</button>
+<button class="nav" data-go="more"><span class="ico">☰</span>More</button>
+</nav>
+
+<div id="massbar" class="massbar"><div class="masscount"><b id="selectedCount">0</b> selected</div><button class="primary" id="massRecord">＋ Record</button><button class="secondary" id="massMove">Move</button></div>
+<div class="overlay" id="modal"><div class="sheet"><div class="grab"></div><h2 id="modalTitle">Add</h2><div id="form"></div></div></div>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+const KEY="herdbook-mobile-v3";
+const seed={groups:[{id:"g1",name:"North Pasture",color:"#6b8e5a"},{id:"g2",name:"Replacement Heifers",color:"#8a6b4f"}],animals:[
+{id:"1",tag:"142",sex:"Cow",breed:"Angus",birth:"2022-03-18",dam:"83",sire:"Bull 17",status:"Bred",tagColor:"Red",groupIds:["g1"],events:[{type:"Calving",date:"2026-07-24",text:"Bull calf #317 — 82 lb. Easy calving."},{type:"Breeding",date:"2026-06-15",text:"Preg checked bred."}]},
+{id:"2",tag:"83",sex:"Cow",breed:"Angus",birth:"2020-04-11",dam:"31",sire:"Bull 8",status:"Open",tagColor:"Blue",groupIds:["g1"],events:[{type:"Treatment",date:"2026-08-10",text:"Foot rot — Penicillin 20 cc."}]},
+{id:"3",tag:"317",sex:"Bull Calf",breed:"Angus",birth:"2026-07-24",dam:"142",sire:"Bull 17",status:"Nursing",tagColor:"Yellow",groupIds:["g1"],events:[{type:"Calving",date:"2026-07-24",text:"Born 82 lb. Linked to dam 142."}]}
+]};
+let db=JSON.parse(localStorage.getItem(KEY)||"null")||seed;
+let selected=new Set(), selectMode=false, currentFilter="All", groupOpen=null;
+const $=id=>document.getElementById(id);
+const colorMap={Red:"#d83b3b",Blue:"#3976d2",Green:"#4f8b50",Yellow:"#e2b72f",Orange:"#e27a32",Pink:"#d76a9a",Purple:"#8064b5",White:"#f4f2ec",Black:"#252525",Gray:"#858585",Brown:"#815b3e"};
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function dateText(x){return x?new Date(x+"T12:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):"—"}
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.go===id));if(id==="home")renderHome();if(id==="herd")renderHerd();if(id==="groups")renderGroups()}
+document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>{selected.clear();selectMode=false;updateMass();go(n.dataset.go)}));
+function renderHome(){
+$("count").textContent=db.animals.length;$("calves").textContent=db.animals.filter(a=>a.sex.includes("Calf")&&a.birth?.startsWith("2026")).length;
+let arr=[];db.animals.forEach(a=>a.events.forEach(e=>arr.push({...e,tag:a.tag})));arr.sort((a,b)=>b.date.localeCompare(a.date));
+$("recent").innerHTML=arr.slice(0,5).map(e=>`<div class="animal"><b>${e.type}</b><div class="meta">#${e.tag} · ${dateText(e.date)}</div><div style="margin-top:7px">${e.text}</div></div>`).join("")||'<div class="empty">No records yet.</div>';
+}
+function matchesFilter(a){if(currentFilter==="All")return true;if(currentFilter==="Calf")return a.sex.includes("Calf");return a.sex===currentFilter||a.sex.startsWith(currentFilter)}
+function renderHerd(){
+let q=($("search").value||"").toLowerCase();let arr=db.animals.filter(a=>matchesFilter(a)&&(a.tag+" "+a.breed+" "+a.sex+" "+a.status).toLowerCase().includes(q));
+$("animals").innerHTML=arr.map(a=>rowHTML(a)).join("")||'<div class="empty">No animals found.</div>';wireRows();
+}
+function rowHTML(a){
+let groups=(a.groupIds||[]).map(id=>db.groups.find(g=>g.id===id)?.name).filter(Boolean);
+return `<div class="rowwrap" data-row="${a.id}"><div class="swipe-actions"><button class="edit-bg" data-edit="${a.id}">Edit</button><button class="delete-bg" data-delete="${a.id}">Delete</button></div><div class="animal" data-animal="${a.id}">${selectMode?`<span class="check ${selected.has(a.id)?"on":""}" data-select="${a.id}">${selected.has(a.id)?"✓":""}</span>`:""}<span class="badge">${a.status||""}</span><div class="aname"><span class="tagdot" style="background:${colorMap[a.tagColor]||"#aaa"}"></span>#${a.tag}</div><div class="meta">${a.sex} · ${a.breed}${groups.length?" · "+groups.join(", "):""}</div><div class="meta">${a.events.length} records · Born ${dateText(a.birth)}</div></div></div>`;
+}
+function wireRows(){
+document.querySelectorAll("[data-select]").forEach(x=>x.addEventListener("click",e=>{e.stopPropagation();toggleSelected(x.dataset.select)}));
+document.querySelectorAll("[data-animal]").forEach(el=>{
+let startX=0,lastX=0,drag=false;
+el.addEventListener("touchstart",e=>{startX=e.touches[0].clientX;lastX=startX;drag=false},{passive:true});
+el.addEventListener("touchmove",e=>{lastX=e.touches[0].clientX;let dx=lastX-startX;if(Math.abs(dx)>10){drag=true;el.style.transform=`translateX(${Math.max(-88,Math.min(88,dx))}px)`}},{passive:true});
+el.addEventListener("touchend",()=>{let dx=lastX-startX;el.style.transform="";if(dx>65){openEdit(el.dataset.animal)}else if(dx<-65){confirmDelete(el.dataset.animal)}else if(!drag){if(selectMode)toggleSelected(el.dataset.animal);else openAnimal(el.dataset.animal)}})
+});
+document.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openEdit(b.dataset.edit)));
+document.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>confirmDelete(b.dataset.delete)));
+}
+function toggleSelected(id){if(selected.has(id))selected.delete(id);else selected.add(id);updateMass();renderHerd()}
+function updateMass(){$("selectedCount").textContent=selected.size;$("massbar").classList.toggle("show",selectMode&&selected.size>0)}
+$("selectBtn").addEventListener("click",()=>{selectMode=!selectMode;if(!selectMode)selected.clear();$("selectBtn").textContent=selectMode?"Done":"Select";renderHerd();updateMass()});
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{currentFilter=c.dataset.filter;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));renderHerd()}));
+$("search").addEventListener("input",renderHerd);
+function confirmDelete(id){let a=db.animals.find(x=>x.id===id);if(confirm("Delete animal #"+a.tag+"? This removes its animal record and history.")){db.animals=db.animals.filter(x=>x.id!==id);selected.delete(id);save();renderHerd();renderHome();toast("Animal deleted")}}
+function openAnimal(id){
+let a=db.animals.find(x=>x.id===id);if(!a)return;go("detail");let events=[...a.events].sort((x,y)=>y.date.localeCompare(x.date));let groups=(a.groupIds||[]).map(id=>db.groups.find(g=>g.id===id)?.name).filter(Boolean);
+$("detailBody").innerHTML=`<button class="secondary" id="back">← Back to Herd</button><div class="detail-card"><div class="toprow"><div><div class="detail-name">#${a.tag}</div><div class="meta">${a.sex} · ${a.breed}</div></div><button class="primary" id="detailAdd">＋ Record</button></div><div class="facts"><div class="fact"><small>Status</small><b>${a.status||"—"}</b></div><div class="fact"><small>Tag color</small><b>${a.tagColor||"—"}</b></div><div class="fact"><small>Born</small><b>${dateText(a.birth)}</b></div><div class="fact"><small>Groups</small><b>${groups.join(", ")||"None"}</b></div><div class="fact"><small>Dam</small><b>${a.dam||"—"}</b></div><div class="fact"><small>Sire</small><b>${a.sire||"—"}</b></div></div></div><div class="section-title">History</div><div class="timeline">${events.map(e=>`<div class="event"><b>${e.type}</b><small>${dateText(e.date)}</small><p>${e.text}</p></div>`).join("")||'<div class="empty">No history yet.</div>'}</div>`;
+$("back").addEventListener("click",()=>go("herd"));$("detailAdd").addEventListener("click",()=>openRecord(null,[a.id]));
+}
+function animalPicker(selectedIds=[],multi=true){
+let ids=new Set(selectedIds);
+return `<div class="picker"><input id="pickSearch" placeholder="Search tag, breed, group…"><div class="picklist" id="pickList">${pickerRows(ids)}</div><div class="small" style="padding:7px 3px">${multi?"Select one or many animals.":"Select an animal."}</div></div>`;
+}
+function pickerRows(ids){
+let q=($("pickSearch")?.value||"").toLowerCase();
+return db.animals.filter(a=>{let groups=(a.groupIds||[]).map(id=>db.groups.find(g=>g.id===id)?.name).join(" ");return (a.tag+" "+a.breed+" "+a.sex+" "+a.status+" "+groups).toLowerCase().includes(q)}).map(a=>`<label class="pickrow"><input type="checkbox" class="pick" value="${a.id}" ${ids.has(a.id)?"checked":""}><span><b>#${a.tag}</b> · ${a.sex}<br><span class="small">${a.breed} · ${a.status||""}</span></span></label>`).join("")||'<div class="empty">No animals match.</div>';
+}
+function openRecord(type=null,preselected=[]){
+$("modalTitle").textContent=type?type+" Record":"Add Record";
+$("form").innerHTML=`<label>Animals</label>${animalPicker(preselected,true)}<label>Record type</label><select id="rtype">${["Treatment","Vaccination","Calving","Breeding","Weight","Note"].map(x=>`<option ${x===type?"selected":""}>${x}</option>`).join("")}</select><label>Date</label><input id="rdate" type="date" value="${new Date().toISOString().slice(0,10)}"><label>Details</label><textarea id="rtext" placeholder="Example: In hoof pen — Draxxin 5 cc each. Or: CIDR/AI details, calf number, weight, etc."></textarea><div class="actions"><button class="secondary" id="cancelR">Cancel</button><button class="primary" id="saveR">Save Record</button></div>`;
+showModal();$("pickSearch").addEventListener("input",()=>{$("pickList").innerHTML=pickerRows(new Set([...document.querySelectorAll(".pick:checked")].map(x=>x.value)))});
+$("cancelR").addEventListener("click",closeModal);$("saveR").addEventListener("click",saveRecord);
+}
+function selectedFromPicker(){return [...document.querySelectorAll(".pick:checked")].map(x=>x.value)}
+function saveRecord(){let ids=selectedFromPicker(),text=$("rtext").value.trim();if(!ids.length){toast("Select at least one animal");return}if(!text){$("rtext").focus();toast("Enter some details");return}let type=$("rtype").value,date=$("rdate").value;ids.forEach(id=>{let a=db.animals.find(x=>x.id===id);a.events.push({type,date,text})});save();closeModal();toast(ids.length+" animal"+(ids.length>1?"s":"")+" updated");selected.clear();selectMode=false;$("selectBtn").textContent="Select";updateMass();renderHome();renderHerd()}
+function openEdit(id){
+let a=db.animals.find(x=>x.id===id);
+$("modalTitle").textContent="Edit #"+a.tag;
+$("form").innerHTML=`<label>Tag number</label><input id="tag" inputmode="numeric" value="${a.tag}"><div class="formrow"><div><label>Sex</label><select id="sex">${["Cow","Bull","Heifer","Bull Calf","Heifer Calf"].map(x=>`<option ${x===a.sex?"selected":""}>${x}</option>`).join("")}</select></div><div><label>Breed</label><input id="breed" value="${a.breed||""}"></div></div><div class="formrow"><div><label>Birth date</label><input id="birth" type="date" value="${a.birth||""}"></div><div><label>Status</label><input id="status" value="${a.status||""}"></div></div><div class="formrow"><div><label>Tag color</label><select id="tagColor">${Object.keys(colorMap).map(x=>`<option ${x===a.tagColor?"selected":""}>${x}</option>`).join("")}</select></div><div><label>Dam</label><input id="dam" value="${a.dam||""}"></div></div><label>Sire</label><input id="sire" value="${a.sire||""}"><label>Groups / pastures</label>${groupPicker(a.groupIds||[])}<div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="saveAnimal">Save Changes</button></div>`;
+showModal();$("cancel").addEventListener("click",closeModal);$("saveAnimal").addEventListener("click",()=>{a.tag=$("tag").value.trim();a.sex=$("sex").value;a.breed=$("breed").value.trim();a.birth=$("birth").value;a.status=$("status").value.trim();a.tagColor=$("tagColor").value;a.dam=$("dam").value.trim();a.sire=$("sire").value.trim();a.groupIds=[...document.querySelectorAll(".groupPick:checked")].map(x=>x.value);save();closeModal();renderHerd();toast("Animal updated")});
+}
+function groupPicker(ids){let set=new Set(ids);return `<div class="picker">${db.groups.length?db.groups.map(g=>`<label class="pickrow"><input class="groupPick" type="checkbox" value="${g.id}" ${set.has(g.id)?"checked":""}><span><b>${g.name}</b></span></label>`).join(""):'<div class="small">No groups yet.</div>'}</div>`}
+function openAdd(){
+$("modalTitle").textContent="Add Animal";
+$("form").innerHTML=`<label>Tag number</label><input id="tag" inputmode="numeric" placeholder="142" autofocus><div class="formrow"><div><label>Sex</label><select id="sex"><option>Cow</option><option>Bull</option><option>Heifer</option><option>Bull Calf</option><option>Heifer Calf</option></select></div><div><label>Breed</label><input id="breed" value="Angus"></div></div><div class="formrow"><div><label>Birth date</label><input id="birth" type="date"></div><div><label>Status</label><input id="status" placeholder="Bred"></div></div><div class="formrow"><div><label>Tag color</label><select id="tagColor">${Object.keys(colorMap).map(x=>`<option>${x}</option>`).join("")}</select></div><div><label>Dam</label><input id="dam" placeholder="83"></div></div><label>Sire</label><input id="sire" placeholder="Bull 17"><label>Starting group / pasture</label>${groupPicker([])}<div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="saveAnimal">Save Animal</button></div>`;
+showModal();$("cancel").addEventListener("click",closeModal);$("saveAnimal").addEventListener("click",saveAnimal);
+}
+function saveAnimal(){let tag=$("tag").value.trim();if(!tag){$("tag").focus();toast("Enter a tag number");return}db.animals.push({id:Date.now().toString(),tag,sex:$("sex").value,breed:$("breed").value.trim()||"Angus",birth:$("birth").value,status:$("status").value.trim(),tagColor:$("tagColor").value,dam:$("dam").value.trim(),sire:$("sire").value.trim(),groupIds:[...document.querySelectorAll(".groupPick:checked")].map(x=>x.value),events:[]});save();closeModal();go("herd");toast("Animal added")}
+function renderGroups(){
+$("groupsList").innerHTML=db.groups.map(g=>{let n=db.animals.filter(a=>(a.groupIds||[]).includes(g.id)).length;return `<button class="group" style="width:100%;text-align:left" data-group="${g.id}"><span class="count">${n} head</span><b>● ${g.name}</b><div class="meta">Tap to view and move cattle</div></button>`}).join("")||'<div class="empty">No groups yet. Create your first pasture or pen.</div>';
+document.querySelectorAll("[data-group]").forEach(b=>b.addEventListener("click",()=>openGroup(b.dataset.group)));
+}
+function openGroup(id){
+let g=db.groups.find(x=>x.id===id);groupOpen=id;let animals=db.animals.filter(a=>(a.groupIds||[]).includes(id));
+$("modalTitle").textContent=g.name;
+$("form").innerHTML=`<div class="detail-card"><b>${animals.length} head</b><div class="meta">Use the buttons below to add, move, or remove cattle from this group.</div></div><button class="primary full" id="addToGroup">＋ Add / Move Animals Here</button><button class="secondary full" id="removeFromGroup" style="margin-top:9px">Remove Animals From This Group</button><div class="section-title">Animals</div><div>${animals.map(a=>`<div class="animal"><b>#${a.tag}</b><div class="meta">${a.sex} · ${a.breed}</div></div>`).join("")||'<div class="empty">No animals in this group.</div>'}</div><div class="actions"><button class="secondary" id="closeG">Close</button><button class="danger" id="deleteG">Delete Group</button></div>`;
+showModal();$("closeG").addEventListener("click",closeModal);$("deleteG").addEventListener("click",()=>{if(confirm("Delete this group? Animals will not be deleted.")){db.groups=db.groups.filter(x=>x.id!==id);db.animals.forEach(a=>a.groupIds=(a.groupIds||[]).filter(x=>x!==id));save();closeModal();renderGroups();toast("Group deleted")}});$("addToGroup").addEventListener("click",()=>openGroupPicker(id,false));$("removeFromGroup").addEventListener("click",()=>openGroupPicker(id,true));
+}
+function openGroupPicker(groupId,remove){
+let g=db.groups.find(x=>x.id===groupId),pre=db.animals.filter(a=>(a.groupIds||[]).includes(groupId)).map(a=>a.id);
+$("modalTitle").textContent=remove?"Remove from "+g.name:"Add to "+g.name;
+$("form").innerHTML=`<label>Animals</label>${animalPicker(remove?pre:[],true)}<div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="apply">${remove?"Remove":"Add to Group"}</button></div>`;
+showModal();$("pickSearch").addEventListener("input",()=>{$("pickList").innerHTML=pickerRows(new Set([...document.querySelectorAll(".pick:checked")].map(x=>x.value)))});
+$("cancel").addEventListener("click",closeModal);$("apply").addEventListener("click",()=>{let ids=selectedFromPicker();if(!ids.length){toast("Select animals");return}ids.forEach(id=>{let a=db.animals.find(x=>x.id===id);a.groupIds=a.groupIds||[];if(remove)a.groupIds=a.groupIds.filter(x=>x!==groupId);else if(!a.groupIds.includes(groupId))a.groupIds.push(groupId)});save();closeModal();openGroup(groupId);toast(ids.length+" animals updated")});
+}
+$("addGroupBtn").addEventListener("click",()=>{ $("modalTitle").textContent="New Group / Pasture";$("form").innerHTML=`<label>Group name</label><input id="gname" placeholder="North Pasture"><div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="saveG">Create Group</button></div>`;showModal();$("cancel").addEventListener("click",closeModal);$("saveG").addEventListener("click",()=>{let name=$("gname").value.trim();if(!name){toast("Enter a group name");return}db.groups.push({id:"g"+Date.now(),name,color:"#6b8e5a"});save();closeModal();renderGroups();toast("Group created")})});
+$("massRecord").addEventListener("click",()=>openRecord(null,[...selected]));
+$("massMove").addEventListener("click",()=>{let ids=[...selected];$("modalTitle").textContent="Move Selected Animals";$("form").innerHTML=`<div class="detail-card"><b>${ids.length} head selected</b></div><label>Move to group / pasture</label><select id="moveGroup">${db.groups.map(g=>`<option value="${g.id}">${g.name}</option>`).join("")}</select><div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="moveNow">Move</button></div>`;showModal();$("cancel").addEventListener("click",closeModal);$("moveNow").addEventListener("click",()=>{let gid=$("moveGroup").value;ids.forEach(id=>{let a=db.animals.find(x=>x.id===id);a.groupIds=[gid]});save();selected.clear();selectMode=false;$("selectBtn").textContent="Select";updateMass();closeModal();renderHerd();toast(ids.length+" animals moved")})});
+document.querySelectorAll(".qbtn").forEach(b=>b.addEventListener("click",()=>openRecord(b.dataset.action,[])));
+$("addBtn").addEventListener("click",openAdd);$("reset").addEventListener("click",()=>{if(confirm("Reset all sample data?")){localStorage.removeItem(KEY);location.reload()}});
+$("modal").addEventListener("click",e=>{if(e.target===$("modal"))closeModal()});
+function showModal(){$("modal").classList.add("show");document.body.style.overflow="hidden"}function closeModal(){$("modal").classList.remove("show");document.body.style.overflow=""}
+function toast(t){$("toast").textContent=t;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",1600)}
+renderHome();renderHerd();renderGroups();
+</script>
+</body></html>
