@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f6f3ed">
+<title>HerdBook</title>
+<style>
+:root{--bg:#f6f3ed;--card:#fff;--ink:#22221e;--muted:#77736c;--line:#e2ddd4;--accent:#2f4a32;--accent2:#e9efe7;--danger:#a7352d;--edit:#596b7d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{min-height:100vh;overscroll-behavior-x:none}
+.app{width:100%;max-width:520px;margin:auto;min-height:100vh;background:var(--bg);padding-bottom:108px;overflow-x:hidden}
+.header{padding:calc(16px + env(safe-area-inset-top)) 18px 12px}.brand{font-size:30px;font-weight:850;letter-spacing:-.7px}.sub{color:var(--muted);font-size:14px;margin-top:3px}
+main{padding:0 15px;width:100%;max-width:100%;overflow-x:hidden}
+.screen{display:none;width:100%;max-width:100%;overflow-x:hidden;padding-top:6px;padding-bottom:18px}
+.screen.active{display:block}
+.title{font-size:25px;margin:13px 3px 18px;font-weight:850}
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:9px;width:100%;max-width:100%;padding-top:4px;padding-bottom:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;text-align:left;width:100%;color:var(--ink)}.stat b{font-size:28px;display:block}.stat span{font-size:13px;color:var(--muted)}.stat:active{transform:scale(.985)}
+.section-title{font-size:18px;font-weight:800;margin:22px 3px 10px}.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.qbtn{min-height:78px;border:1px solid var(--line);background:var(--card);border-radius:17px;font-weight:750;font-size:15px;text-align:left;padding:14px}.qbtn .ico{font-size:27px;display:block;margin-bottom:6px}
+.primary,.secondary,.danger{min-height:52px;border-radius:15px;padding:0 16px;border:0;font-weight:800}.primary{background:var(--accent);color:white}.secondary{background:var(--card);border:1px solid var(--line)}.danger{background:var(--danger);color:#fff}.full{width:100%}
+.search{width:100%;height:52px;border:1px solid var(--line);background:white;border-radius:15px;padding:0 16px;font-size:17px;margin-bottom:9px;outline:none}
+.filters{display:flex;gap:7px;overflow:auto;padding-bottom:3px}.chip{border:1px solid var(--line);background:white;border-radius:20px;padding:9px 12px;white-space:nowrap;font-size:13px;font-weight:700}.chip.on{background:var(--accent2);color:var(--accent);border-color:#cbd9c8}
+.rowwrap{position:relative;overflow:hidden;border-radius:17px;margin:9px 0}.swipe-actions{position:absolute;inset:0;display:flex;justify-content:space-between}.swipe-actions button{width:86px;border:0;color:white;font-weight:800;font-size:13px}.edit-bg{background:var(--edit)}.delete-bg{background:var(--danger);margin-left:auto}
+.animal{position:relative;background:white;border:1px solid var(--line);border-radius:17px;padding:14px 15px;min-height:83px;transition:transform .16s ease;z-index:2;touch-action:pan-y}.animal:active{transform:scale(.985)}.animal .check{float:left;width:27px;height:27px;margin:2px 10px 0 0;border:2px solid #cfcac1;border-radius:8px;background:white}.animal .check.on{background:var(--accent);border-color:var(--accent);color:white;text-align:center;line-height:23px}.aname{font-size:18px;font-weight:800}.meta{color:var(--muted);font-size:13px;margin-top:4px}.badge{float:right;background:var(--accent2);padding:6px 9px;border-radius:20px;font-size:12px;font-weight:700}.tagdot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:1px;border:1px solid rgba(0,0,0,.15)}
+.detail-card{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.detail-name{font-size:27px;font-weight:850}.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.fact{background:var(--bg);padding:11px;border-radius:12px}.fact small{display:block;color:var(--muted);font-size:12px}.fact b{font-size:15px}
+.timeline{margin:15px 0}.event{position:relative;margin-left:8px;border-left:2px solid #d9d5cc;padding:0 0 18px 20px}.event:before{content:"";position:absolute;left:-6px;top:2px;width:10px;height:10px;background:var(--accent);border-radius:50%}.event b{font-size:15px}.event small{display:block;color:var(--muted);margin:3px 0 6px}.event p{margin:0;background:white;border:1px solid var(--line);padding:11px;border-radius:12px}
+.navbar{position:fixed;bottom:0;left:0;right:0;max-width:520px;margin:auto;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:7px 5px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);z-index:20}.nav{border:0;background:none;color:#817d75;min-height:57px;font-size:11px;font-weight:700;border-radius:13px}.nav .ico{display:block;font-size:21px;margin-bottom:3px}.nav.active{color:var(--accent);background:#f0f4ef}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:50;align-items:flex-end;overflow:hidden}.overlay.show{display:flex}
+.sheet{width:100%;max-width:520px;margin:auto;background:white;border-radius:24px 24px 0 0;padding:22px 18px calc(32px + env(safe-area-inset-bottom));max-height:92vh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.grab{width:44px;height:5px;background:#d5d1c9;border-radius:9px;margin:0 auto 20px}
+.sheet h2{font-size:24px;margin:0 0 18px}
+.sheet .actions{margin-top:24px;margin-bottom:4px}
+label{display:block;color:var(--muted);font-size:13px;font-weight:650;margin:12px 2px 5px}input,select,textarea{width:100%;height:52px;border:1px solid var(--line);border-radius:13px;padding:0 13px;background:#faf9f6;font-size:17px;outline:none}textarea{height:100px;padding-top:12px;resize:none}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+.picker{border:1px solid var(--line);border-radius:15px;padding:9px;background:#faf9f6}.picker input{height:45px;background:white;margin-bottom:7px}.picklist{max-height:270px;overflow:auto}.pickrow{display:flex;align-items:center;gap:9px;padding:11px 5px;border-bottom:1px solid var(--line);font-size:15px}.pickrow:last-child{border:0}.pickrow input{width:24px;height:24px;margin:0}.small{font-size:12px;color:var(--muted)}
+.group{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;margin:10px 0}.group b{font-size:18px}.group .count{float:right;background:var(--bg);border-radius:20px;padding:6px 10px;font-size:12px;font-weight:800}.group-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}.group-actions button{min-height:44px;border-radius:12px;font-weight:800;border:1px solid var(--line);background:#faf9f6}.group-actions .movebtn{background:var(--accent);color:white;border-color:var(--accent)}
+.massbar{position:fixed;bottom:81px;left:50%;transform:translateX(-50%);width:min(490px,calc(100% - 22px));background:#222;color:white;border-radius:18px;padding:9px;display:none;grid-template-columns:1.2fr 1fr 1fr;gap:7px;z-index:30;box-shadow:0 5px 24px rgba(0,0,0,.22)}.massbar.show{display:grid}.massbar button{min-height:48px;border:0;border-radius:12px;font-weight:800}.massbar .masscount{background:#222;color:white;text-align:left;padding:0 8px}
+.empty{text-align:center;color:var(--muted);padding:35px 10px}.hint{font-size:12px;color:var(--muted);margin:5px 3px 0}
+.toast{position:fixed;z-index:100;left:50%;bottom:150px;transform:translateX(-50%);background:#222;color:white;padding:12px 17px;border-radius:22px;display:none;font-weight:700;font-size:14px;white-space:nowrap}
+
+img,svg,canvas{max-width:100%}
+.grid2,.quick,.formrow,.actions,.facts,.navbar,.massbar{max-width:100%}
+.grid2>*,.quick>*,.formrow>*,.actions>*,.facts>*{min-width:0}
+.animal,.group,.detail-card,.picker,input,select,textarea,button{max-width:100%}
+.meta,.small,.event p,.detail-card p{overflow-wrap:anywhere}
+
+
+.ai-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ai-tabs button{min-height:46px;border:1px solid var(--line);border-radius:12px;background:#faf9f6;font-weight:800}
+.ai-tabs button.on{background:var(--accent);color:white;border-color:var(--accent)}
+.source-note{background:#f1f4ed;border:1px solid #d9e1d4;border-radius:13px;padding:11px;margin:10px 0;font-size:12px;color:#5f665b}
+.history-row{background:white;border:1px solid var(--line);border-radius:14px;padding:12px;margin:8px 0}
+.history-row b{display:block}
+
+.ai-card{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0}
+.ai-score{font-size:30px;font-weight:850}
+.ai-rank{display:flex;align-items:flex-start;gap:12px}
+.ai-rank-num{width:34px;height:34px;border-radius:50%;background:var(--accent);color:white;display:grid;place-items:center;font-weight:850;flex:0 0 auto}
+.ai-meter{height:9px;background:#ece8df;border-radius:9px;overflow:hidden;margin:7px 0 3px}
+.ai-meter span{display:block;height:100%;background:var(--accent)}
+.ai-bull-card{background:#faf9f6;border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+.ai-source{background:#f3f6f0;border:1px solid #dce5d7;border-radius:13px;padding:11px;margin:8px 0;font-size:12px}
+.ai-warning{background:#fbf3e8;border:1px solid #ead8bd;border-radius:13px;padding:11px;margin:8px 0;font-size:12px}
+.ai-danger-note{background:#f9ece9;border:1px solid #ebcbc5;border-radius:13px;padding:11px;margin:8px 0;font-size:12px}
+.objective-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.objective-btn{min-height:55px;border:1px solid var(--line);background:white;border-radius:13px;font-weight:800;padding:8px}
+.objective-btn.on{background:var(--accent);color:white;border-color:var(--accent)}
+
+.app-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:#eef3ec;margin-bottom:7px}
+.app-icon svg{width:23px;height:23px;stroke:var(--accent);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.qbtn{position:relative;overflow:hidden}
+.qbtn .ico{display:none}
+.qbtn .app-icon{margin-bottom:8px}
+.home-tools-note{font-size:12px;color:var(--muted);margin:7px 3px 0}
+.customize-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.customize-row:last-child{border-bottom:0}
+.customize-row .tool-label{flex:1;min-width:0}
+.customize-row .app-icon{margin:0;flex:0 0 auto}
+.customize-row input{width:24px;height:24px;margin:0}
+.customize-row .secondary{min-height:38px;padding:0 10px}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="header"><div class="brand">🐄 HerdBook</div><div class="sub">Your cattle record book</div></header>
+<main>
+<section id="home" class="screen active">
+<div class="title">My Herd</div>
+<div class="grid2"><button class="stat" id="animalsStat"><b id="count">0</b><span>Animals ›</span></button><button class="stat" id="calvesStat"><b id="calves">0</b><span>Calves this year ›</span></button></div>
+<div class="section-title">Quick Record</div>
+<div class="quick" id="homeQuick">
+<button class="qbtn" data-action="Treatment"><span class="ico">💊</span>Treat animals</button>
+<button class="qbtn" data-action="Vaccination"><span class="ico">💉</span>Vaccinate</button>
+<button class="qbtn" data-action="Calving"><span class="ico">🐮</span>Calving</button>
+<button class="qbtn" data-action="Breeding"><span class="ico">🤰</span>Breed heifers/cows</button>
+<button class="qbtn" data-action="Weight"><span class="ico">⚖️</span>Record weights</button>
+<button class="qbtn" data-action="Note"><span class="ico">📝</span>Add note</button>
+</div>
+<div class="section-title">Recent Activity</div><div id="recent"></div>
+</section>
+
+<section id="herd" class="screen">
+<div class="toprow"><div class="title">My Animals</div><div style="display:flex;gap:6px"><button class="secondary" id="selectBtn">Select</button><button class="primary" id="addBtn">＋ Add</button></div></div>
+<input id="search" class="search" type="search" placeholder="Search tag, breed, status…">
+<div class="filters"><button class="chip on" data-filter="All">All</button><button class="chip" data-filter="Cow">Cows</button><button class="chip" data-filter="Heifer">Heifers</button><button class="chip" data-filter="Bull">Bulls</button><button class="chip" data-filter="Calf">Calves</button></div>
+<div class="hint">Swipe a row <b>right to edit</b> or <b>left to delete</b>.</div>
+<div id="animals"></div>
+</section>
+
+<section id="groups" class="screen">
+<div class="toprow"><div class="title">Groups & Pastures</div><button class="primary" id="addGroupBtn">＋ Group</button></div>
+<div class="detail-card"><b>Manage cattle by pasture or group</b><div class="meta">Use Add, Remove, or Move right from each group. Moving cattle transfers them from one group to another in one step.</div></div>
+<div id="groupsList"></div>
+</section>
+
+<section id="calendar" class="screen">
+<div class="toprow"><div class="title">Calendar</div><button class="secondary" id="todayBtn">Today</button></div>
+<div class="detail-card">
+<b>Ranch Timeline</b>
+<div class="meta">A running timeline of herd activity and upcoming plans. Tap an item to see the animals involved.</div>
+<div class="formrow" style="margin-top:12px"><button class="secondary" id="prevCal">← Earlier</button><button class="secondary" id="nextCal">Later →</button></div>
+</div>
+<div class="section-title">Upcoming</div><div id="upcomingBody"></div>
+<div class="section-title">Timeline</div><div id="calendarBody"></div>
+</section>
+<section id="detail" class="screen"><div id="detailBody"></div></section>
+<section id="more" class="screen">
+<div class="title">More</div>
+<div class="section-title">Calculators</div><div class="home-tools-note">Any of these can be pinned to Home.</div>
+<div class="quick">
+<button class="qbtn" id="calcBreed"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 8h14M9 12h6M9 16h4"/></svg></span>Breeding date</button>
+<button class="qbtn" id="calcCalving"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v15H4zM8 3v4M16 3v4M4 9h16"/><path d="M9 15c0-2 1-3 3-3s3 1 3 3-1 3-3 3-3-1-3-3z"/></svg></span>Calving date</button>
+<button class="qbtn" id="calcAge"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.3L4 9"/><path d="M4 5v4h4M12 8v5l3 2"/></svg></span>Animal age</button>
+<button class="qbtn" id="calcWeight"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7M3 19h18"/></svg></span>Average daily gain</button>
+<button class="qbtn" id="calc205"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7M3 19h18"/></svg></span>205-day adjusted weight</button>
+<button class="qbtn" id="calc365"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7M3 19h18"/></svg></span>365-day adjusted weight</button>
+<button class="qbtn" id="calcWean"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 11c0-3 2-5 5-5s5 2 5 5v4c0 3-2 5-5 5s-5-2-5-5z"/><path d="M6 8 3 6M14 8l3-2M8 13h.01M12 13h.01"/><circle cx="18" cy="17" r="4"/><path d="M18 15v2l1 1"/></svg></span>Weaning date</button>
+<button class="qbtn" id="calcDMI"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 6h14l-2 14H7zM8 6l2-3M16 6l-2-3"/><path d="M9 11c2 1 4 1 6 0M9 15c2 1 4 1 6 0"/></svg></span>Dry matter intake</button>
+<button class="qbtn" id="calcStock"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M3 18c4-5 6-4 9-1 3-4 5-4 9 1"/><path d="M5 15V8M9 15V6M15 15V9M19 15V7"/></svg></span>Stocking rate</button>
+<button class="qbtn" id="calcPreg"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 8h14"/><path d="m9 14 2 2 4-4"/></svg></span>Pregnancy rate</button>
+<button class="qbtn" id="calcCalvingRate"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 8h14"/><path d="m9 14 2 2 4-4"/></svg></span>Calving rate</button>
+<button class="qbtn" id="calcDeath"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.3L4 9"/><path d="M4 5v4h4M12 8v5l3 2"/></svg></span>Death loss</button>
+<button class="qbtn" id="calcReplace"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.3L4 9"/><path d="M4 5v4h4M12 8v5l3 2"/></svg></span>Replacement rate</button>
+<button class="qbtn" id="calcBreakEven"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.7-1.7-1-3-1-2 0-3 1-3 2.3 0 3.2 6 1.6 6 4.7 0 1.4-1.3 2.5-3.4 2.5-1.4 0-2.6-.4-3.4-1.2M12 5v14"/></svg></span>Break-even calf price</button>
+<button class="qbtn" id="calcGainCost"><span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.7-1.7-1-3-1-2 0-3 1-3 2.3 0 3.2 6 1.6 6 4.7 0 1.4-1.3 2.5-3.4 2.5-1.4 0-2.6-.4-3.4-1.2M12 5v14"/></svg></span>Cost per lb of gain</button>
+</div>
+<div class="section-title">Planning & Records</div><div class="home-tools-note">Pin your most-used tools to Home and arrange them however you want.</div>
+<div class="quick">
+<button class="qbtn" id="preconditionPlanner"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 8h14"/><path d="m9 14 2 2 4-4"/></svg></span>Preconditioning planner</button>
+<button class="qbtn" id="historyTool"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.3L4 9"/><path d="M4 5v4h4M12 8v5l3 2"/></svg></span>Year history</button>
+<button class="qbtn" id="herdAI"><span class="app-icon"><svg viewBox="0 0 24 24"><path d="M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-1 5 3 3 0 0 0 3 5h1M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 1 5 3 3 0 0 1-3 5h-1M9 4v16M15 4v16M9 8h2M13 12h2M9 16h2"/></svg></span>Herd AI</button>
+</div>
+<div class="section-title">Home Page</div>
+<div class="detail-card">
+<b>Customize Quick Record</b>
+<div class="meta">Choose which shortcuts appear on Home and arrange their order.</div>
+<button class="secondary full" id="customizeHome" style="margin-top:12px">Edit Quick Record Buttons</button>
+</div>
+<div class="detail-card"><b>Prototype</b><p class="meta">Your entries are saved in this browser on this device.</p></div>
+<button class="secondary full" id="reset">Reset sample data</button>
+</section>
+</main>
+
+<nav class="navbar">
+<button class="nav active" data-go="home"><span class="ico">⌂</span>Home</button>
+<button class="nav" data-go="herd"><span class="ico">🐄</span>Herd</button>
+<button class="nav" data-go="groups"><span class="ico">▦</span>Groups</button>
+<button class="nav" data-go="calendar"><span class="ico">◷</span>Calendar</button>
+<button class="nav" data-go="more"><span class="ico">☰</span>More</button>
+</nav>
+
+<div id="massbar" class="massbar"><div class="masscount"><b id="selectedCount">0</b> selected</div><button class="primary" id="massRecord">＋ Record</button><button class="secondary" id="massMove">Move</button></div>
+<div class="overlay" id="modal"><div class="sheet" id="sheet"><div class="grab"></div><h2 id="modalTitle">Add</h2><div id="form"></div></div></div>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+const KEY="herdbook-mobile-v3";
+const seed={groups:[{id:"g1",name:"North Pasture",color:"#6b8e5a"},{id:"g2",name:"Replacement Heifers",color:"#8a6b4f"}],animals:[
+{id:"1",tag:"142",sex:"Cow",breed:"Angus",birth:"2022-03-18",dam:"83",sire:"Bull 17",status:"Bred",tagColor:"Red",groupIds:["g1"],events:[{type:"Calving",date:"2026-07-24",text:"Bull calf #317 — 82 lb. Easy calving."},{type:"Breeding",date:"2026-06-15",text:"Preg checked bred."}]},
+{id:"2",tag:"83",sex:"Cow",breed:"Angus",birth:"2020-04-11",dam:"31",sire:"Bull 8",status:"Open",tagColor:"Blue",groupIds:["g1"],events:[{type:"Treatment",date:"2026-08-10",text:"Foot rot — Penicillin 20 cc."}]},
+{id:"3",tag:"317",sex:"Bull Calf",breed:"Angus",birth:"2026-07-24",dam:"142",sire:"Bull 17",status:"Nursing",tagColor:"Yellow",groupIds:["g1"],events:[{type:"Calving",date:"2026-07-24",text:"Born 82 lb. Linked to dam 142."}]}
+]};
+let db=JSON.parse(localStorage.getItem(KEY)||"null")||seed;
+db.homeQuick = db.homeQuick || ["Treatment","Vaccination","Breeding","Weight","Note"];
+db.calendar = db.calendar || [];
+
+let selected=new Set(), selectMode=false, currentFilter="All", groupOpen=null;
+let modalInitialState="", sheetTouchStartY=0, sheetTouchLastY=0;
+const $=id=>document.getElementById(id);
+const colorMap={Red:"#d83b3b",Blue:"#3976d2",Green:"#4f8b50",Yellow:"#e2b72f",Orange:"#e27a32",Pink:"#d76a9a",Purple:"#8064b5",White:"#f4f2ec",Black:"#252525",Gray:"#858585",Brown:"#815b3e"};
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function dateText(x){return x?new Date(x+"T12:00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):"—"}
+function go(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active");document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.go===id));if(id==="home")renderHome();if(id==="herd")renderHerd();if(id==="groups")renderGroups();if(id==="calendar")renderCalendar()}
+
+function openHomeCustomizer(){
+ let keys=Object.keys(toolCatalog),set=new Set(db.homeQuick);
+ $("modalTitle").textContent="Customize Home";
+ $("form").innerHTML=`<div class="detail-card"><b>Choose your Home tools</b><div class="meta">Add tools from More, remove shortcuts you do not use, and change their order.</div></div><div id="homeChoices">${keys.map(key=>{let t=toolCatalog[key];return `<div class="customize-row" data-q="${key}"><input type="checkbox" class="homePick" value="${key}" ${set.has(key)?"checked":""}>${svgIcon(t.icon)}<span class="tool-label"><b>${t.label}</b><span class="small" style="display:block">${t.subtitle||""}</span></span><button class="secondary qup" data-up="${key}">↑</button><button class="secondary qdown" data-down="${key}">↓</button></div>`}).join("")}</div><div class="actions"><button class="secondary" id="cancelHome">Cancel</button><button class="primary" id="saveHome">Save Home</button></div>`;
+ showModal();
+ $("cancelHome").addEventListener("click",closeModal);
+ $("saveHome").addEventListener("click",()=>{db.homeQuick=[...document.querySelectorAll(".customize-row[data-q]")].filter(r=>r.querySelector(".homePick").checked).map(r=>r.dataset.q);save();closeModal();renderHome();toast("Home updated")});
+ document.querySelectorAll(".qup").forEach(b=>b.addEventListener("click",()=>moveQuick(b.dataset.up,-1)));
+ document.querySelectorAll(".qdown").forEach(b=>b.addEventListener("click",()=>moveQuick(b.dataset.down,1)));
+}
+function moveQuick(t,dir){
+let list=[...document.querySelectorAll(".pickrow[data-q]")],el=list.find(x=>x.dataset.q===t),target=list[list.indexOf(el)+dir];
+if(!target)return;
+if(dir<0)target.before(el);else target.after(el);
+}
+function calcModal(title,body,calc){
+$("modalTitle").textContent=title;$("form").innerHTML=body+`<div class="actions"><button class="secondary" id="closeCalc">Close</button><button class="primary" id="doCalc">Calculate</button></div><div id="calcResult" class="detail-card" style="display:none"></div>`;
+showModal();$("closeCalc").addEventListener("click",closeModal);$("doCalc").addEventListener("click",()=>{$("calcResult").style.display="block";$("calcResult").innerHTML=calc()});
+}
+$("calcBreed").addEventListener("click",()=>calcModal("Breeding Date Calculator",`<label>Target calving date</label><input id="targetDate" type="date">`,()=>{let d=new Date($("targetDate").value+"T12:00:00");d.setDate(d.getDate()-283);return `<b>Approximate breeding date</b><div class="meta">${dateText(d.toISOString().slice(0,10))}</div><p class="small">Uses a 283-day cattle gestation estimate. Actual gestation varies.</p>`}));
+$("calcCalving").addEventListener("click",()=>calcModal("Calving Date Calculator",`<label>Breeding date</label><input id="breedDate" type="date">`,()=>{let d=new Date($("breedDate").value+"T12:00:00");d.setDate(d.getDate()+283);return `<b>Estimated calving date</b><div class="meta">${dateText(d.toISOString().slice(0,10))}</div><p class="small">Uses a 283-day cattle gestation estimate. Actual gestation varies.</p>`}));
+$("calcAge").addEventListener("click",()=>calcModal("Animal Age Calculator",`<label>Birth date</label><input id="ageBirth" type="date">`,()=>{let b=new Date($("ageBirth").value+"T12:00:00"),n=new Date(),months=(n.getFullYear()-b.getFullYear())*12+n.getMonth()-b.getMonth();if(n.getDate()<b.getDate())months--;return `<b>Age</b><div class="meta">${Math.max(0,Math.floor(months/12))} years, ${Math.max(0,months%12)} months</div>`}));
+$("calcWeight").addEventListener("click",()=>calcModal("Average Daily Gain",`<div class="formrow"><div><label>Starting weight</label><input id="w1" type="number" inputmode="decimal" placeholder="400"></div><div><label>Ending weight</label><input id="w2" type="number" inputmode="decimal" placeholder="650"></div></div><label>Days between weights</label><input id="wdays" type="number" inputmode="decimal" placeholder="100">`,()=>{let gain=(+$("w2").value-+$("w1").value)/(+$("wdays").value);return `<b>Average daily gain</b><div class="meta">${isFinite(gain)?gain.toFixed(2)+" lb/day":"Enter all values"}</div>`}));
+
+$("calc205").addEventListener("click",()=>calcModal("205-Day Adjusted Weaning Weight",`<div class="formrow"><div><label>Weaning weight (lb)</label><input id="ww" type="number"></div><div><label>Age at weaning (days)</label><input id="ageW" type="number"></div></div><div class="formrow"><div><label>Birth weight (lb)</label><input id="bw" type="number"></div><div><label>Dam age (years)</label><input id="damAge" type="number" placeholder="2"></div></div>`,()=>{let ww=+$("ww").value,age=+$("ageW").value,bw=+$("bw").value,da=+$("damAge").value||2;let adj=bw+(ww-bw)*(205/age)+(da===2?10:0);return `<b>Approx. 205-day adjusted weight</b><div class="meta">${isFinite(adj)?adj.toFixed(0)+" lb":"Enter all values"}</div><p class="small">Simplified field estimate. Formal breed association formulas can include sex, age of dam, and contemporary-group adjustments.</p>`}));
+$("calc365").addEventListener("click",()=>calcModal("365-Day Adjusted Weight",`<div class="formrow"><div><label>Current weight (lb)</label><input id="cw365" type="number"></div><div><label>Age (days)</label><input id="age365" type="number"></div></div><label>Birth weight (lb)</label><input id="bw365" type="number">`,()=>{let cw=+$("cw365").value,age=+$("age365").value,bw=+$("bw365").value;let out=bw+(cw-bw)*(365/age);return `<b>Estimated 365-day weight</b><div class="meta">${isFinite(out)?out.toFixed(0)+" lb":"Enter all values"}</div>`}));
+$("calcWean").addEventListener("click",()=>calcModal("Weaning Date",`<label>Birth date</label><input id="birthWean" type="date"><label>Weaning age (days)</label><input id="weanDays" type="number" value="205">`,()=>{let d=new Date($("birthWean").value+"T12:00:00");d.setDate(d.getDate()+(+$("weanDays").value||205));return `<b>Estimated weaning date</b><div class="meta">${dateText(d.toISOString().slice(0,10))}</div>`}));
+$("calcDMI").addEventListener("click",()=>calcModal("Dry Matter Intake",`<label>Animal body weight (lb)</label><input id="dmiWt" type="number"><label>Expected DMI (% of body weight)</label><input id="dmiPct" type="number" step=".1" value="2.5">`,()=>{let w=+$("dmiWt").value,p=+$("dmiPct").value;return `<b>Estimated DMI</b><div class="meta">${isFinite(w*p/100)?(w*p/100).toFixed(1)+" lb dry matter/day":"Enter values"}</div>`}));
+$("calcStock").addEventListener("click",()=>calcModal("Stocking Rate",`<div class="formrow"><div><label>Acres</label><input id="stockAcres" type="number"></div><div><label>Animal units</label><input id="stockAU" type="number"></div></div><label>Grazing days</label><input id="stockDays" type="number">`,()=>{let a=+$("stockAcres").value,u=+$("stockAU").value,d=+$("stockDays").value;return `<b>Stocking density</b><div class="meta">${a&&d?(u/a).toFixed(2)+" AU/acre; "+(a/u).toFixed(2)+" acres/AU":"Enter all values"}</div>`}));
+$("calcPreg").addEventListener("click",()=>calcModal("Pregnancy Rate",`<div class="formrow"><div><label>Females exposed</label><input id="pregEx" type="number"></div><div><label>Pregnant</label><input id="pregPos" type="number"></div></div>`,()=>{let e=+$("pregEx").value,p=+$("pregPos").value;return `<b>Pregnancy rate</b><div class="meta">${e?(p/e*100).toFixed(1)+"%":"Enter values"}</div>`}));
+$("calcCalvingRate").addEventListener("click",()=>calcModal("Calving Rate",`<div class="formrow"><div><label>Cows/heifers pregnant</label><input id="calvPreg" type="number"></div><div><label>Successfully calved</label><input id="calvDone" type="number"></div></div>`,()=>{let p=+$("calvPreg").value,c=+$("calvDone").value;return `<b>Calving rate</b><div class="meta">${p?(c/p*100).toFixed(1)+"%":"Enter values"}</div>`}));
+$("calcDeath").addEventListener("click",()=>calcModal("Death Loss",`<div class="formrow"><div><label>Animals at start</label><input id="deathStart" type="number"></div><div><label>Deaths</label><input id="deaths" type="number"></div></div>`,()=>{let s=+$("deathStart").value,d=+$("deaths").value;return `<b>Death loss</b><div class="meta">${s?(d/s*100).toFixed(1)+"%":"Enter values"}</div>`}));
+$("calcReplace").addEventListener("click",()=>calcModal("Replacement Rate",`<div class="formrow"><div><label>Herd cows at start</label><input id="repHerd" type="number"></div><div><label>Replacements added</label><input id="repAdd" type="number"></div></div>`,()=>{let h=+$("repHerd").value,r=+$("repAdd").value;return `<b>Replacement rate</b><div class="meta">${h?(r/h*100).toFixed(1)+"%":"Enter values"}</div>`}));
+$("calcBreakEven").addEventListener("click",()=>calcModal("Break-Even Calf Price",`<label>Total cost per calf ($)</label><input id="beCost" type="number"><label>Expected sale weight (lb)</label><input id="beWt" type="number">`,()=>{let c=+$("beCost").value,w=+$("beWt").value;return `<b>Break-even</b><div class="meta">${w?"$"+(c/w).toFixed(2)+"/lb or $"+(c/w*100).toFixed(0)+"/cwt":"Enter values"}</div>`}));
+$("calcGainCost").addEventListener("click",()=>calcModal("Cost per Pound of Gain",`<div class="formrow"><div><label>Total feed/yardage cost ($)</label><input id="gainCost" type="number"></div><div><label>Pounds gained</label><input id="gainLb" type="number"></div></div>`,()=>{let c=+$("gainCost").value,g=+$("gainLb").value;return `<b>Cost of gain</b><div class="meta">${g?"$"+(c/g).toFixed(2)+"/lb":"Enter values"}</div>`}));
+
+function formatISODate(d){
+ if(!d) return "";
+ return new Date(d+"T12:00:00");
+}
+function isoFromDateObj(d){return d.toISOString().slice(0,10)}
+function addDaysISO(date,days){
+ let d=formatISODate(date); d.setDate(d.getDate()+Number(days||0)); return isoFromDateObj(d);
+}
+
+/* -------- Preconditioning Planner -------- */
+$("preconditionPlanner").addEventListener("click",openPreconditionPlanner);
+function openPreconditionPlanner(){
+ $("modalTitle").textContent="Preconditioning Planner";
+ $("form").innerHTML=`
+ <div class="detail-card"><b>Build a calf preconditioning schedule</b>
+ <div class="meta">Choose a calf group and target weaning date. The app creates editable working dates, then you can add the plan to the main Calendar.</div></div>
+ <label>Calf group / pasture (optional)</label>
+ <select id="pcGroup"><option value="">No group — calendar only</option>${db.groups.map(g=>`<option value="${g.id}">${g.name}</option>`).join("")}</select>
+ <label>Target weaning date</label><input id="pcWean" type="date">
+ <div class="formrow">
+   <div><label>1st vaccine days before weaning</label><input id="pcVax1Lead" type="number" value="28"></div>
+   <div><label>Booster days before weaning</label><input id="pcVax2Lead" type="number" value="14"></div>
+ </div>
+ <label>Days to hold after weaning before sale/ship</label><input id="pcHold" type="number" value="45">
+ <button class="secondary full" id="pcGenerate" style="margin-top:14px">Generate dates</button>
+ <div id="pcDates"></div>
+ <div class="source-note">Planning aid only. Vaccine products, timing, boosters, and disease coverage should follow the product label and your veterinarian's herd-health plan.</div>
+ <div class="actions"><button class="secondary" id="pcCancel">Cancel</button><button class="primary" id="pcAdd" disabled>Add Plan to Calendar</button></div>`;
+ showModal();
+ $("pcCancel").addEventListener("click",closeModal);
+ $("pcGenerate").addEventListener("click",generatePC);
+ $("pcAdd").addEventListener("click",addPCToCalendar);
+}
+function generatePC(){
+ let wean=$("pcWean").value;
+ if(!wean){toast("Choose a weaning date");return}
+ let first=addDaysISO(wean,-Number($("pcVax1Lead").value||28));
+ let booster=addDaysISO(wean,-Number($("pcVax2Lead").value||14));
+ let ship=addDaysISO(wean,Number($("pcHold").value||45));
+ $("pcDates").innerHTML=`
+ <div class="section-title">Editable schedule</div>
+ <label>First vaccine / processing</label><input id="pcFirstDate" type="date" value="${first}">
+ <label>Booster / pre-weaning processing</label><input id="pcBoosterDate" type="date" value="${booster}">
+ <label>Weaning</label><input id="pcWeanDate" type="date" value="${wean}">
+ <label>Deworm / parasite control</label><input id="pcDewormDate" type="date" value="${wean}">
+ <label>Sale / ship target</label><input id="pcShipDate" type="date" value="${ship}">
+ <label>Plan notes</label><textarea id="pcNotes" placeholder="Vaccine product, lot, route, ration transition, bunk training, marketing program, etc."></textarea>`;
+ $("pcAdd").disabled=false;
+}
+function addPCToCalendar(){
+ if(!$("pcFirstDate")){toast("Generate the plan first");return}
+ let gid=$("pcGroup").value;
+ let animalIds=gid?db.animals.filter(a=>(a.groupIds||[]).includes(gid)).map(a=>a.id):[];
+ let groupName=gid?db.groups.find(g=>g.id===gid)?.name:"";
+ let notes=$("pcNotes").value.trim();
+ let events=[
+  [$("pcFirstDate").value,"Preconditioning","First vaccine / processing"],
+  [$("pcBoosterDate").value,"Preconditioning","Booster / pre-weaning processing"],
+  [$("pcWeanDate").value,"Weaning","Wean calves"],
+  [$("pcDewormDate").value,"Preconditioning","Deworm / parasite-control date"],
+  [$("pcShipDate").value,"Marketing","Target sale / ship date"]
+ ];
+ let stamp=Date.now();
+ events.forEach((e,i)=>db.calendar.push({id:"pc"+stamp+i,date:e[0],type:e[1],text:e[2]+(groupName?" — "+groupName:"")+(notes?" · "+notes:""),animalIds}));
+ save();closeModal();renderCalendar();renderHome();toast("Preconditioning plan added");
+}
+
+/* -------- Searchable Year History -------- */
+$("historyTool").addEventListener("click",openHistory);
+function collectHistory(){
+ let rows=[];
+ (db.calendar||[]).forEach(e=>rows.push({...e,source:"Calendar"}));
+ db.animals.forEach(a=>(a.events||[]).forEach((e,i)=>{
+   let duplicate=rows.some(x=>x.date===e.date&&x.type===e.type&&(x.animalIds||[]).includes(a.id)&&x.text===e.text);
+   if(!duplicate) rows.push({id:"h"+a.id+i,date:e.date,type:e.type,text:e.text,animalIds:[a.id],source:"Animal"});
+ }));
+ return rows.sort((a,b)=>b.date.localeCompare(a.date));
+}
+function openHistory(){
+ let years=[...new Set(collectHistory().map(x=>(x.date||"").slice(0,4)).filter(Boolean))].sort().reverse();
+ $("modalTitle").textContent="Herd History";
+ $("form").innerHTML=`
+ <div class="detail-card"><b>Search your herd's history</b><div class="meta">Treatments, breeding, calving, moves, notes, and calendar events are kept together by year.</div></div>
+ <div class="formrow"><div><label>Year</label><select id="histYear"><option value="">All years</option>${years.map(y=>`<option>${y}</option>`).join("")}</select></div><div><label>Type</label><select id="histType"><option value="">All types</option>${[...new Set(collectHistory().map(x=>x.type))].sort().map(t=>`<option>${t}</option>`).join("")}</select></div></div>
+ <label>Search</label><input id="histSearch" placeholder="Tag, treatment, pasture, bull, vaccine…">
+ <div id="historyResults"></div>
+ <button class="secondary full" id="histClose" style="margin-top:14px">Close</button>`;
+ showModal(); renderHistoryResults();
+ $("histYear").addEventListener("change",renderHistoryResults);
+ $("histType").addEventListener("change",renderHistoryResults);
+ $("histSearch").addEventListener("input",renderHistoryResults);
+ $("histClose").addEventListener("click",closeModal);
+}
+function renderHistoryResults(){
+ let q=($("histSearch")?.value||"").toLowerCase(),year=$("histYear")?.value||"",type=$("histType")?.value||"";
+ let rows=collectHistory().filter(e=>{
+   let tags=(e.animalIds||[]).map(id=>db.animals.find(a=>a.id===id)?.tag).filter(Boolean).join(" ");
+   let hay=(e.type+" "+e.text+" "+tags).toLowerCase();
+   return (!year||e.date.startsWith(year))&&(!type||e.type===type)&&(!q||hay.includes(q));
+ });
+ $("historyResults").innerHTML=rows.slice(0,250).map(e=>{
+   let tags=(e.animalIds||[]).map(id=>db.animals.find(a=>a.id===id)?.tag).filter(Boolean);
+   return `<div class="history-row"><b>${e.type} · ${dateText(e.date)}</b><div>${e.text}</div><div class="small">${tags.length?"#"+tags.slice(0,12).join(", #"):"Ranch event"}</div></div>`;
+ }).join("")||'<div class="empty">No history matches.</div>';
+}
+
+
+/* -------- Herd AI v2 -------- */
+$("herdAI").addEventListener("click",openHerdAI);
+
+function openHerdAI(){
+ $("modalTitle").textContent="Herd AI";
+ $("form").innerHTML=`
+ <div class="ai-tabs"><button class="on" id="aiHealthTab">Health Case</button><button id="aiBreedTab">Breeding Match</button></div>
+ <div id="aiBody"></div>
+ <button class="secondary full" id="aiClose" style="margin-top:16px">Close</button>`;
+ showModal();
+ renderHealthAI();
+ $("aiHealthTab").addEventListener("click",()=>{toggleAITab(true);renderHealthAI()});
+ $("aiBreedTab").addEventListener("click",()=>{toggleAITab(false);renderBreedingAI()});
+ $("aiClose").addEventListener("click",closeModal);
+}
+function toggleAITab(health){
+ $("aiHealthTab").classList.toggle("on",health);
+ $("aiBreedTab").classList.toggle("on",!health);
+}
+
+function renderHealthAI(){
+ $("aiBody").innerHTML=`
+ <div class="ai-card"><b>Health research assistant</b><div class="meta">Start with the animal's own records, then organize symptoms, risk factors, red flags, and evidence to investigate.</div></div>
+ <label>Animal</label><select id="aiAnimal"><option value="">Choose animal</option>${db.animals.map(a=>`<option value="${a.id}">#${a.tag} · ${a.sex} · ${a.breed}</option>`).join("")}</select>
+ <label>What are you seeing?</label><textarea id="aiSymptoms" placeholder="Example: 500 lb calf, off feed, 104.5°F, rapid breathing, cough, droopy ears, moved 3 days ago…"></textarea>
+ <div class="formrow"><div><label>Temperature °F</label><input id="aiTemp" type="number" step=".1"></div><div><label>How long?</label><input id="aiDuration" placeholder="1 day"></div></div>
+ <div class="formrow"><div><label>Appetite</label><select id="aiAppetite"><option>Normal</option><option>Reduced</option><option>Off feed</option></select></div><div><label>Activity</label><select id="aiActivity"><option>Normal</option><option>Depressed</option><option>Down / cannot rise</option></select></div></div>
+ <label>Recent management change</label><textarea id="aiManagement" placeholder="Weaned, shipped, new pasture, ration change, weather event, processed, calved, etc."></textarea>
+ <button class="primary full" id="aiAnalyzeHealth" style="margin-top:14px">Analyze Case</button>
+ <div id="aiResult"></div>
+ <div class="ai-source"><b>Production source policy:</b> retrieve and cite university veterinary schools, Extension, Beef Quality Assurance, peer-reviewed research, veterinary manuals, product labels, and the animal's own HerdBook records. The system should state uncertainty and flag urgent veterinary cases instead of presenting a definite diagnosis.</div>`;
+ $("aiAnalyzeHealth").addEventListener("click",runHealthAIPrototype);
+}
+
+function runHealthAIPrototype(){
+ let id=$("aiAnimal").value,symptoms=$("aiSymptoms").value.trim(),s=symptoms.toLowerCase(),temp=Number($("aiTemp").value||0);
+ let appetite=$("aiAppetite").value,activity=$("aiActivity").value,mgmt=$("aiManagement").value.trim(),a=db.animals.find(x=>x.id===id);
+ if(!a||!symptoms){toast("Choose an animal and enter symptoms");return}
+ let urgent=false,urgentReasons=[],categories=[],questions=[];
+ if(temp>=105){urgent=true;urgentReasons.push("temperature ≥105°F")}
+ if(activity.includes("Down")){urgent=true;urgentReasons.push("down/cannot rise")}
+ if(/severe bloat|gasp|blue|choke|profuse blood|bloody diarrhea|can't breathe|cannot breathe/.test(s)){urgent=true;urgentReasons.push("potential emergency sign")}
+ if(/cough|breath|nasal|lung|droopy ear|respir/.test(s)){categories.push(["Respiratory disease complex / pneumonia","Respiratory signs plus stress history, temperature, and lung sounds would help narrow this."]);questions.push("Any nasal discharge, increased respiratory rate, or recent weaning/shipping?")}
+ if(/scour|diarr|watery manure|blood in manure/.test(s)){categories.push(["Enteric disease / scours","Age, hydration, blood, fever, and number affected are important discriminators."]);questions.push("How old is the calf, and is it dehydrated or passing blood?")}
+ if(/limp|foot|hoof|swollen leg|lameness/.test(s)){categories.push(["Foot/joint/injury causes","Check interdigital swelling, odor, wounds, joint heat, and whether weight bearing is possible."]);questions.push("Is swelling between the claws or higher in a joint?")}
+ if(/bloat|left side|distend/.test(s)){categories.push(["Bloat / rumen distension","Distension and breathing difficulty can become time-sensitive."]);questions.push("Is the left side visibly distended and is breathing affected?")}
+ if(/eye|pinkeye|tear|cornea/.test(s)){categories.push(["Eye disease / pinkeye differential","Look for tearing, squinting, corneal opacity/ulceration, and flies."]);questions.push("Is there a white spot, ulcer, or cloudiness on the cornea?")}
+ if(!categories.length)categories.push(["Nonspecific illness","Temperature, hydration, respiration, manure, lameness, and recent management changes are useful next discriminators."]);
+ let recent=(a.events||[]).slice().sort((x,y)=>y.date.localeCompare(x.date)).slice(0,6);
+ let groups=(a.groupIds||[]).map(id=>db.groups.find(g=>g.id===id)?.name).filter(Boolean);
+ $("aiResult").innerHTML=`
+ ${urgent?`<div class="ai-danger-note"><b>⚠️ Urgent attention may be warranted.</b><br>${urgentReasons.join(", ")}. Contact a veterinarian promptly if the animal is worsening or unstable.</div>`:""}
+ <div class="ai-card"><b>Case summary</b><p>Animal #${a.tag}: ${a.sex}, ${a.breed}, status ${a.status||"unknown"}.${groups.length?" Group: "+groups.join(", ")+".":""} Appetite: ${appetite}. Activity: ${activity}.${mgmt?" Recent management: "+mgmt+".":""}</p></div>
+ <div class="section-title">Possibilities to investigate</div>
+ ${categories.map((c,i)=>`<div class="ai-card"><b>${i+1}. ${c[0]}</b><div class="meta">${c[1]}</div></div>`).join("")}
+ <div class="section-title">What would help narrow it down</div><div class="ai-card">${questions.length?questions.map(q=>`<div>• ${q}</div>`).join(""):"Add more observations such as hydration, manure, breathing rate, lameness, and recent stressors."}</div>
+ <div class="section-title">Recent HerdBook history</div><div class="ai-card">${recent.length?recent.map(e=>`<div><b>${dateText(e.date)} · ${e.type}</b><div class="small">${e.text}</div></div>`).join("<hr style='border:0;border-top:1px solid var(--line)'>"):"No prior records."}</div>
+ <div class="ai-warning">Prototype only: this organizes the case and surfaces red flags. The production AI should retrieve live veterinary references and cite each claim before suggesting disease-specific treatment.</div>`;
+}
+
+function renderBreedingAI(){
+ window._bullCandidates=window._bullCandidates||[];
+ $("aiBody").innerHTML=`
+ <div class="ai-card"><b>Breeding & sire-selection specialist</b><div class="meta">Compare multiple bulls against one female using her history, your breeding objective, EPDs, accuracy, breed composition, and heterosis.</div></div>
+ <label>Cow / heifer</label><select id="breedCow"><option value="">Choose female</option>${db.animals.filter(a=>a.sex==="Cow"||a.sex==="Heifer").map(a=>`<option value="${a.id}">#${a.tag} · ${a.breed} · ${a.status||""}</option>`).join("")}</select>
+ <label>Primary objective</label>
+ <div class="objective-grid" id="objectiveGrid">
+   <button class="objective-btn on" data-obj="Balanced">Balanced</button>
+   <button class="objective-btn" data-obj="Heifer Safe">Heifer-safe</button>
+   <button class="objective-btn" data-obj="Maternal">Keep replacements</button>
+   <button class="objective-btn" data-obj="Terminal">Terminal</button>
+ </div>
+ <input type="hidden" id="breedObjective" value="Balanced">
+ <div class="formrow"><div><label>Female breed composition</label><input id="cowBreedComp" placeholder="100% Angus"></div><div><label>Desired calf type</label><select id="calfGoal"><option>Keep replacements</option><option>Sell at weaning</option><option>Feed / retain ownership</option></select></div></div>
+ <label>Female strengths / weaknesses</label><textarea id="cowTraits" placeholder="Calves easy, needs more growth, keep mature size moderate, weak feet, too much milk, etc."></textarea>
+ <div class="section-title">Bull candidates</div><div id="bullList"></div>
+ <button class="secondary full" id="addBull">＋ Add Bull Candidate</button>
+ <button class="primary full" id="compareBulls" style="margin-top:10px">Compare Bulls</button>
+ <div id="breedResult"></div>
+ <div class="ai-source"><b>Breeding AI rules:</b> interpret EPDs in breed context, use accuracy and percentile rank when available, prefer economic indexes that match the stated objective, do not compare raw EPDs across breeds without proper across-breed adjustments or a multi-breed evaluation, and treat heterosis plus breed complementarity as part of the mating.</div>`;
+ document.querySelectorAll(".objective-btn").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".objective-btn").forEach(x=>x.classList.toggle("on",x===b));$("breedObjective").value=b.dataset.obj;}));
+ $("addBull").addEventListener("click",addBullCandidate);
+ $("compareBulls").addEventListener("click",compareBullCandidates);
+ renderBullList();
+}
+
+function addBullCandidate(){
+ window._bullCandidates.push({id:"bull"+Date.now()+Math.random(),name:"",breed:"Angus",breedComp:"",ced:"",bw:"",ww:"",yw:"",milk:"",stay:"",marb:"",re:"",accuracy:"",percentile:"",indexName:"",indexValue:""});
+ renderBullList();
+}
+function renderBullList(){
+ let list=window._bullCandidates||[];
+ $("bullList").innerHTML=list.length?list.map((b,i)=>`
+ <div class="ai-bull-card" data-bull="${b.id}">
+   <div class="toprow"><b>Bull ${i+1}</b><button class="secondary" data-remove-bull="${b.id}" style="min-height:38px;padding:0 10px">Remove</button></div>
+   <div class="formrow"><div><label>ID / name</label><input data-bull-field="name" value="${b.name||""}" placeholder="Bull 508"></div><div><label>Breed</label><input data-bull-field="breed" value="${b.breed||""}" placeholder="Angus"></div></div>
+   <label>Breed composition</label><input data-bull-field="breedComp" value="${b.breedComp||""}" placeholder="100% Angus">
+   <div class="formrow"><div><label>CED</label><input data-bull-field="ced" type="number" step=".1" value="${b.ced||""}"></div><div><label>BW</label><input data-bull-field="bw" type="number" step=".1" value="${b.bw||""}"></div></div>
+   <div class="formrow"><div><label>WW</label><input data-bull-field="ww" type="number" step=".1" value="${b.ww||""}"></div><div><label>YW</label><input data-bull-field="yw" type="number" step=".1" value="${b.yw||""}"></div></div>
+   <div class="formrow"><div><label>Milk</label><input data-bull-field="milk" type="number" step=".1" value="${b.milk||""}"></div><div><label>Stayability / longevity</label><input data-bull-field="stay" type="number" step=".1" value="${b.stay||""}"></div></div>
+   <div class="formrow"><div><label>Marbling</label><input data-bull-field="marb" type="number" step=".01" value="${b.marb||""}"></div><div><label>Ribeye</label><input data-bull-field="re" type="number" step=".01" value="${b.re||""}"></div></div>
+   <div class="formrow"><div><label>Accuracy</label><input data-bull-field="accuracy" type="number" step=".01" value="${b.accuracy||""}" placeholder=".45"></div><div><label>Percentile rank</label><input data-bull-field="percentile" type="number" step="1" value="${b.percentile||""}" placeholder="15"></div></div>
+   <div class="formrow"><div><label>Economic index</label><input data-bull-field="indexName" value="${b.indexName||""}" placeholder="$B, API, TI…"></div><div><label>Index value</label><input data-bull-field="indexValue" type="number" step=".1" value="${b.indexValue||""}"></div></div>
+ </div>`).join(""):`<div class="empty">Add two or more bulls to compare.</div>`;
+ document.querySelectorAll("[data-bull]").forEach(card=>{let bull=window._bullCandidates.find(x=>x.id===card.dataset.bull);card.querySelectorAll("[data-bull-field]").forEach(inp=>inp.addEventListener("input",()=>bull[inp.dataset.bullField]=inp.value));});
+ document.querySelectorAll("[data-remove-bull]").forEach(btn=>btn.addEventListener("click",()=>{window._bullCandidates=window._bullCandidates.filter(x=>x.id!==btn.dataset.removeBull);renderBullList();}));
+}
+function n(v){let x=Number(v);return isFinite(x)?x:0}
+function bullScore(b,obj,cow){
+ let s=50,reasons=[],cautions=[];
+ let ced=n(b.ced),bw=n(b.bw),ww=n(b.ww),yw=n(b.yw),milk=n(b.milk),stay=n(b.stay),marb=n(b.marb),re=n(b.re),acc=n(b.accuracy),pct=n(b.percentile),idx=n(b.indexValue);
+ if(obj==="Heifer Safe"){s+=ced*1.9-bw*2.2+ww*.09;reasons.push("Strongest weighting is on calving ease and birth-weight risk.");}
+ else if(obj==="Maternal"){s+=ced*.9-bw*.5+ww*.12+milk*.14+stay*.45+marb*2+re*1.5;reasons.push("Weights fertility/longevity, calving ease, moderate maternal ability, and useful growth.");}
+ else if(obj==="Terminal"){s+=ced*.35-bw*.15+ww*.16+yw*.13+marb*11+re*8+idx*.02;reasons.push("Weights growth, carcass merit, and terminal economics while maintaining acceptable calving risk.");}
+ else{s+=ced*.75-bw*.55+ww*.12+yw*.07+milk*.10+stay*.22+marb*7+re*5+idx*.01;reasons.push("Balanced weighting spreads selection pressure across calving, maternal, growth, and carcass traits.");}
+ if(acc>0){s+=Math.min(4,acc*5);reasons.push(`Accuracy ${acc.toFixed(2)} modestly increases confidence.`)}
+ if(pct>0&&pct<=25){s+=(26-pct)*.12;reasons.push(`Reported percentile rank (${pct}%) adds favorable context.`)}
+ let cb=(cow?.breed||"").toLowerCase(),sb=(b.breed||"").toLowerCase();
+ if(cb&&sb&&cb!==sb){s+=4;reasons.push(`Crossbreeding ${cow.breed} × ${b.breed} may add heterosis and breed complementarity.`)}else if(cb&&sb)cautions.push("Same-breed mating will not capture direct crossbred heterosis.");
+ let hist=(cow?.events||[]).filter(e=>e.type==="Calving").map(e=>e.text).join(" ");
+ if(/pull|jack|c-section|difficult/i.test(hist)){s+=ced*.45-bw*.6;cautions.push("Recorded difficult-calving history increased calving-ease weighting.");}
+ let traits=($("cowTraits")?.value||"").toLowerCase();
+ if(/too much milk|high milk|reduce milk/.test(traits)){s-=milk*.08;cautions.push("Concern about milk level slightly penalized high Milk.");}
+ if(/needs growth|more growth|growth/.test(traits))s+=ww*.05+yw*.03;
+ if(/moderate size|mature size/.test(traits))cautions.push("Mature-size EPDs were not entered, so mature cow size cannot yet be evaluated directly.");
+ s=Math.max(0,Math.min(100,s));return{score:s,reasons,cautions};
+}
+function compareBullCandidates(){
+ let cow=db.animals.find(a=>a.id===$("breedCow").value),bulls=(window._bullCandidates||[]).filter(b=>b.name||b.ced||b.ww||b.yw);
+ if(!cow){toast("Choose a female");return}
+ if(bulls.length<2){toast("Add at least two bull candidates");return}
+ let obj=$("breedObjective").value;
+ let ranked=bulls.map(b=>({bull:b,...bullScore(b,obj,cow)})).sort((a,b)=>b.score-a.score);
+ $("breedResult").innerHTML=`<div class="section-title">Ranked matches for #${cow.tag}</div>${ranked.map((r,i)=>`
+ <div class="ai-card"><div class="ai-rank"><div class="ai-rank-num">${i+1}</div><div style="flex:1;min-width:0">
+ <div class="toprow"><b>${r.bull.name||("Bull "+(i+1))}</b><span class="ai-score">${r.score.toFixed(0)}</span></div>
+ <div class="small">${r.bull.breed||"Breed not entered"}${r.bull.breedComp?" · "+r.bull.breedComp:""}</div>
+ <div class="ai-meter"><span style="width:${r.score}%"></span></div><p>${r.reasons.join(" ")}</p>${r.cautions.length?`<div class="ai-warning">${r.cautions.join(" ")}</div>`:""}
+ </div></div></div>`).join("")}
+ <div class="ai-warning"><b>Important:</b> this prototype ranking only uses entered data. The production version should pull current breed averages, percentiles, accuracies, economic indexes, across-breed adjustment factors where appropriate, pedigree/inbreeding information, and the female's actual production history before making a final recommendation.</div>`;
+}
+$("customizeHome").addEventListener("click",openHomeCustomizer);
+$("todayBtn").addEventListener("click",()=>{renderCalendar();window.scrollTo({top:0,behavior:"smooth"})});
+$("prevCal").addEventListener("click",()=>{window.scrollBy({top:500,behavior:"smooth"})});
+$("nextCal").addEventListener("click",()=>{window.scrollBy({top:-500,behavior:"smooth"})});
+document.querySelectorAll(".nav").forEach(n=>n.addEventListener("click",()=>{selected.clear();selectMode=false;updateMass();go(n.dataset.go)}));
+
+const toolCatalog={
+ Treatment:{label:"Treat",subtitle:"Health treatment",icon:"medical",kind:"record"},
+ Vaccination:{label:"Vaccinate",subtitle:"Vaccination record",icon:"syringe",kind:"record"},
+ Calving:{label:"Calving",subtitle:"Record a birth",icon:"calf",kind:"record"},
+ Breeding:{label:"Breeding",subtitle:"AI / natural service",icon:"dna",kind:"record"},
+ Weight:{label:"Weights",subtitle:"Record weight",icon:"scale",kind:"record"},
+ Note:{label:"Note",subtitle:"Quick herd note",icon:"note",kind:"record"},
+ Preconditioning:{label:"Preconditioning",subtitle:"Build calf schedule",icon:"calendarCheck",kind:"more"},
+ History:{label:"History",subtitle:"Search yearly records",icon:"history",kind:"more"},
+ HerdAI:{label:"Herd AI",subtitle:"Health + breeding",icon:"brain",kind:"more"},
+ BreedDateCalc:{label:"Breeding Date",subtitle:"Work backward from calving",icon:"calendar",kind:"more"},
+ CalvingDateCalc:{label:"Calving Date",subtitle:"Estimate due date",icon:"calendarCalf",kind:"more"},
+ ADGCalc:{label:"ADG",subtitle:"Average daily gain",icon:"chart",kind:"more"},
+ WeaningCalc:{label:"Weaning Date",subtitle:"Estimate weaning date",icon:"calfClock",kind:"more"},
+ DMI:{label:"Dry Matter",subtitle:"Estimate DMI",icon:"feed",kind:"more"},
+ Stocking:{label:"Stocking Rate",subtitle:"Acres and animal units",icon:"pasture",kind:"more"},
+ BreakEven:{label:"Break-even",subtitle:"Calf price calculator",icon:"dollar",kind:"more"}
+};
+function svgIcon(name){
+ const icons={
+ medical:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M9 3h6v5h5v6h-5v5H9v-5H4V8h5z"/></svg></span>`,
+ syringe:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="m14 4 6 6M12 6l6 6M5 19l7-7M4 20l3-1-2-2-1 3ZM11 7l6 6M15 3l6 6"/></svg></span>`,
+ calf:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M6 9c0-3 2-5 6-5s6 2 6 5v5c0 3-2 5-6 5s-6-2-6-5z"/><path d="M7 7 4 5M17 7l3-2M9 12h.01M15 12h.01M10 16h4"/></svg></span>`,
+ dna:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M7 3c6 4 4 14 10 18M17 3C11 7 13 17 7 21M8 7h8M8 17h8M10 12h4"/></svg></span>`,
+ scale:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 20h14M7 20l2-7h6l2 7M12 13V5M8 5h8M9 9h6"/></svg></span>`,
+ note:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M15 3v4h4M9 11h6M9 15h6"/></svg></span>`,
+ calendarCheck:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 8h14"/><path d="m9 14 2 2 4-4"/></svg></span>`,
+ history:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2-5.3L4 9"/><path d="M4 5v4h4M12 8v5l3 2"/></svg></span>`,
+ brain:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-1 5 3 3 0 0 0 3 5h1M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 1 5 3 3 0 0 1-3 5h-1M9 4v16M15 4v16M9 8h2M13 12h2M9 16h2"/></svg></span>`,
+ calendar:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 2v4M16 2v4M5 8h14M9 12h6M9 16h4"/></svg></span>`,
+ calendarCalf:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v15H4zM8 3v4M16 3v4M4 9h16"/><path d="M9 15c0-2 1-3 3-3s3 1 3 3-1 3-3 3-3-1-3-3z"/></svg></span>`,
+ chart:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7M3 19h18"/></svg></span>`,
+ calfClock:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 11c0-3 2-5 5-5s5 2 5 5v4c0 3-2 5-5 5s-5-2-5-5z"/><path d="M6 8 3 6M14 8l3-2M8 13h.01M12 13h.01"/><circle cx="18" cy="17" r="4"/><path d="M18 15v2l1 1"/></svg></span>`,
+ feed:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M5 6h14l-2 14H7zM8 6l2-3M16 6l-2-3"/><path d="M9 11c2 1 4 1 6 0M9 15c2 1 4 1 6 0"/></svg></span>`,
+ pasture:`<span class="app-icon"><svg viewBox="0 0 24 24"><path d="M3 18c4-5 6-4 9-1 3-4 5-4 9 1"/><path d="M5 15V8M9 15V6M15 15V9M19 15V7"/></svg></span>`,
+ dollar:`<span class="app-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 8.5c-.7-.7-1.7-1-3-1-2 0-3 1-3 2.3 0 3.2 6 1.6 6 4.7 0 1.4-1.3 2.5-3.4 2.5-1.4 0-2.6-.4-3.4-1.2M12 5v14"/></svg></span>`
+ };return icons[name]||icons.note;
+}
+function launchTool(key){
+ const t=toolCatalog[key];if(!t)return;
+ if(t.kind==="record"){if(key==="Calving")openCalving();else openRecord(key,[]);return;}
+ const map={
+   Preconditioning:openPreconditionPlanner,History:openHistory,HerdAI:openHerdAI,
+   BreedDateCalc:()=>$("calcBreed").click(),CalvingDateCalc:()=>$("calcCalving").click(),
+   ADGCalc:()=>$("calcWeight").click(),WeaningCalc:()=>$("calcWean").click(),
+   DMI:()=>$("calcDMI").click(),Stocking:()=>$("calcStock").click(),BreakEven:()=>$("calcBreakEven").click()
+ };if(map[key])map[key]();
+}
+const actionInfo={
+Treatment:["💊","Treat animals"],
+Vaccination:["💉","Vaccinate"],
+Calving:["🐮","Calving"],
+Breeding:["🤰","Breed heifers/cows"],
+Weight:["⚖️","Record weights"],
+Note:["📝","Add note"]
+};
+function renderHome(){
+$("count").textContent=db.animals.length;
+$("calves").textContent=db.animals.filter(a=>a.sex.includes("Calf")&&a.birth?.startsWith(String(new Date().getFullYear()))).length;
+$("recent").innerHTML=(db.calendar.length?[...db.calendar].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5):[]).map(e=>`<div class="animal"><b>${e.type}</b><div class="meta">${dateText(e.date)} · ${e.animalIds?.length||0} animals</div><div style="margin-top:7px">${e.text}</div></div>`).join("")||'<div class="empty">No records yet.</div>';
+$("homeQuick").innerHTML=db.homeQuick.map(key=>{let t=toolCatalog[key]||{label:key,subtitle:"",icon:"note"};return `<button class="qbtn" data-tool="${key}">${svgIcon(t.icon)}<span>${t.label}</span><span class="small" style="display:block;margin-top:3px;font-weight:500">${t.subtitle||""}</span></button>`}).join("");
+document.querySelectorAll("#homeQuick .qbtn").forEach(b=>b.addEventListener("click",()=>launchTool(b.dataset.tool)));
+}
+
+function setHerdFilter(filter){
+currentFilter=filter;
+document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x.dataset.filter===filter));
+if($("search")) $("search").value="";
+go("herd");
+renderHerd();
+}
+$("animalsStat").addEventListener("click",()=>setHerdFilter("All"));
+$("calvesStat").addEventListener("click",()=>setHerdFilter("Calf"));
+
+function matchesFilter(a){if(currentFilter==="All")return true;if(currentFilter==="Calf")return a.sex.includes("Calf");return a.sex===currentFilter||a.sex.startsWith(currentFilter)}
+function renderHerd(){
+let q=($("search").value||"").toLowerCase();let arr=db.animals.filter(a=>matchesFilter(a)&&(a.tag+" "+a.breed+" "+a.sex+" "+a.status).toLowerCase().includes(q));
+$("animals").innerHTML=arr.map(a=>rowHTML(a)).join("")||'<div class="empty">No animals found.</div>';wireRows();
+}
+function rowHTML(a){
+let groups=(a.groupIds||[]).map(id=>db.groups.find(g=>g.id===id)?.name).filter(Boolean);
+return `<div class="rowwrap" data-row="${a.id}"><div class="swipe-actions"><button class="edit-bg" data-edit="${a.id}">Edit</button><button class="delete-bg" data-delete="${a.id}">Delete</button></div><div class="animal" data-animal="${a.id}">${selectMode?`<span class="check ${selected.has(a.id)?"on":""}" data-select="${a.id}">${selected.has(a.id)?"✓":""}</span>`:""}<span class="badge">${a.status||""}</span><div class="aname"><span class="tagdot" style="background:${colorMap[a.tagColor]||"#aaa"}"></span>#${a.tag}</div><div class="meta">${a.sex} · ${a.breed}${groups.length?" · "+groups.join(", "):""}</div><div class="meta">${a.events.length} records · Born ${dateText(a.birth)}</div></div></div>`;
+}
+function wireRows(){
+document.querySelectorAll("[data-select]").forEach(x=>x.addEventListener("click",e=>{e.stopPropagation();toggleSelected(x.dataset.select)}));
+document.querySelectorAll("[data-animal]").forEach(el=>{
+let startX=0,lastX=0,drag=false;
+el.addEventListener("touchstart",e=>{startX=e.touches[0].clientX;lastX=startX;drag=false},{passive:true});
+el.addEventListener("touchmove",e=>{lastX=e.touches[0].clientX;let dx=lastX-startX;if(Math.abs(dx)>10){drag=true;el.style.transform=`translateX(${Math.max(-88,Math.min(88,dx))}px)`}},{passive:true});
+el.addEventListener("touchend",()=>{let dx=lastX-startX;el.style.transform="";if(dx>65){openEdit(el.dataset.animal)}else if(dx<-65){confirmDelete(el.dataset.animal)}else if(!drag){if(selectMode)toggleSelected(el.dataset.animal);else openAnimal(el.dataset.animal)}})
+});
+document.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>openEdit(b.dataset.edit)));
+document.querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>confirmDelete(b.dataset.delete)));
+}
+function toggleSelected(id){if(selected.has(id))selected.delete(id);else selected.add(id);updateMass();renderHerd()}
+function updateMass(){$("selectedCount").textContent=selected.size;$("massbar").classList.toggle("show",selectMode&&selected.size>0)}
+$("selectBtn").addEventListener("click",()=>{selectMode=!selectMode;if(!selectMode)selected.clear();$("selectBtn").textContent=selectMode?"Done":"Select";renderHerd();updateMass()});
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>{currentFilter=c.dataset.filter;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===c));renderHerd()}));
+$("search").addEventListener("input",renderHerd);
+function confirmDelete(id){let a=db.animals.find(x=>x.id===id);if(confirm("Delete animal #"+a.tag+"? This removes its animal record and history.")){db.animals=db.animals.filter(x=>x.id!==id);selected.delete(id);save();renderHerd();renderHome();toast("Animal deleted")}}
+function openAnimal(id){
+let a=db.animals.find(x=>x.id===id);if(!a)return;go("detail");let events=[...a.events].sort((x,y)=>y.date.localeCompare(x.date));let groups=(a.groupIds||[]).map(id=>db.groups.find(g=>g.id===id)?.name).filter(Boolean);
+$("detailBody").innerHTML=`<button class="secondary" id="back">← Back to Herd</button><div class="detail-card"><div class="toprow"><div><div class="detail-name">#${a.tag}</div><div class="meta">${a.sex} · ${a.breed}</div></div><button class="primary" id="detailAdd">＋ Record</button></div><div class="facts"><div class="fact"><small>Status</small><b>${a.status||"—"}</b></div><div class="fact"><small>Tag color</small><b>${a.tagColor||"—"}</b></div><div class="fact"><small>Born</small><b>${dateText(a.birth)}</b></div><div class="fact"><small>Groups</small><b>${groups.join(", ")||"None"}</b></div><div class="fact"><small>Dam</small><b>${a.dam||"—"}</b></div><div class="fact"><small>Sire</small><b>${a.sire||"—"}</b></div></div></div><div class="section-title">History</div><div class="timeline">${events.map(e=>`<div class="event"><b>${e.type}</b><small>${dateText(e.date)}</small><p>${e.text}</p></div>`).join("")||'<div class="empty">No history yet.</div>'}</div>`;
+$("back").addEventListener("click",()=>go("herd"));$("detailAdd").addEventListener("click",()=>openRecord(null,[a.id]));
+}
+function animalPicker(selectedIds=[],selectedGroupIds=[]){
+let ids=new Set(selectedIds), gids=new Set(selectedGroupIds);
+return `<div class="picker">
+<label style="margin-top:0">Groups / pastures</label>
+<div class="picklist" style="max-height:150px">${db.groups.map(g=>`<label class="pickrow"><input class="groupPickRecord" type="checkbox" value="${g.id}" ${gids.has(g.id)?"checked":""}><span><b>${g.name}</b><br><span class="small">${db.animals.filter(a=>(a.groupIds||[]).includes(g.id)).length} head</span></span></label>`).join("")||'<div class="small">No groups yet.</div>'}</div>
+<label>Individual animals</label>
+<input id="pickSearch" placeholder="Search tag, breed, status…">
+<div class="picklist" id="pickList">${pickerRows(ids)}</div>
+<div class="small" style="padding:7px 3px">Select groups and/or individual animals. Duplicate animals are only recorded once.</div>
+</div>`;
+}
+function pickerRows(ids){
+let q=($("pickSearch")?.value||"").toLowerCase();
+return db.animals.filter(a=>(a.tag+" "+a.breed+" "+a.sex+" "+a.status).toLowerCase().includes(q)).map(a=>`<label class="pickrow"><input type="checkbox" class="pick" value="${a.id}" ${ids.has(a.id)?"checked":""}><span><b>#${a.tag}</b> · ${a.sex}<br><span class="small">${a.breed} · ${a.status||""}</span></span></label>`).join("")||'<div class="empty">No animals match.</div>';
+}
+function recordSelectedIds(){
+let ids=new Set([...document.querySelectorAll(".pick:checked")].map(x=>x.value));
+document.querySelectorAll(".groupPickRecord:checked").forEach(x=>{
+ db.animals.filter(a=>(a.groupIds||[]).includes(x.value)).forEach(a=>ids.add(a.id));
+});
+return [...ids];
+}
+
+function damPickerRows(q="",selectedId=""){
+q=(q||"").toLowerCase();
+return db.animals
+ .filter(a=>(a.sex==="Cow"||a.sex==="Heifer") && (a.tag+" "+a.breed+" "+a.status).toLowerCase().includes(q))
+ .map(a=>`<label class="pickrow"><input type="radio" name="damPick" class="damPick" value="${a.id}" ${a.id===selectedId?"checked":""}><span><b>#${a.tag}</b> · ${a.sex}<br><span class="small">${a.breed} · ${a.status||""}</span></span></label>`)
+ .join("")||'<div class="empty">No cows/heifers match.</div>';
+}
+function openCalving(preselectedDam=null){
+$("modalTitle").textContent="Record Calving";
+$("form").innerHTML=`
+<div class="detail-card"><b>Dam & calf</b><div class="meta">Pick the dam, then enter the calf's tag and birth details. The calf will be created automatically and linked to her.</div></div>
+<label>Dam</label>
+<div class="picker">
+<input id="damSearch" placeholder="Search dam tag…" inputmode="numeric">
+<div class="picklist" id="damPickList">${damPickerRows("",preselectedDam||"")}</div>
+</div>
+<label>Calving date</label><input id="calvingDate" type="date" value="${new Date().toISOString().slice(0,10)}">
+<div class="formrow">
+ <div><label>Calf tag</label><input id="calfTag" inputmode="numeric" placeholder="317"></div>
+ <div><label>Tag color</label><select id="calfTagColor">${Object.keys(colorMap).map(x=>`<option>${x}</option>`).join("")}</select></div>
+</div>
+<div class="formrow">
+ <div><label>Sex</label><select id="calfSex"><option value="Bull Calf">Bull calf</option><option value="Heifer Calf">Heifer calf</option></select></div>
+ <div><label>Birth weight (lb)</label><input id="birthWeight" type="number" inputmode="decimal" placeholder="82"></div>
+</div>
+<div class="formrow">
+ <div><label>Calf status</label><select id="calfStatus"><option>Alive</option><option>Stillborn</option><option>Died after birth</option></select></div>
+ <div><label>Calving assistance</label><select id="calvingAssist"><option>Unassisted</option><option>Hands / easy pull</option><option>Rope / chains</option><option>Calf jack</option><option>C-section</option><option>Other</option></select></div>
+</div>
+<label>Sire (optional)</label><input id="calfSire" placeholder="Bull 17">
+<label>Calf vigor / notes (optional)</label><textarea id="calvingNotes" placeholder="Up and nursing, weak calf, malpresentation, twins, treatment given, etc."></textarea>
+<div class="actions"><button class="secondary" id="cancelCalving">Cancel</button><button class="primary" id="saveCalving">Save Calving</button></div>`;
+showModal();
+$("damSearch").addEventListener("input",()=>{
+ let selected=document.querySelector(".damPick:checked")?.value||"";
+ $("damPickList").innerHTML=damPickerRows($("damSearch").value,selected);
+});
+$("cancelCalving").addEventListener("click",closeModal);
+$("saveCalving").addEventListener("click",saveCalving);
+}
+function saveCalving(){
+let damId=document.querySelector(".damPick:checked")?.value;
+let calfTag=$("calfTag").value.trim();
+if(!damId){toast("Select the dam");return}
+if(!calfTag){$("calfTag").focus();toast("Enter the calf tag");return}
+if(db.animals.some(a=>a.tag===calfTag)){toast("That calf tag already exists");return}
+let dam=db.animals.find(a=>a.id===damId);
+let date=$("calvingDate").value;
+let sex=$("calfSex").value;
+let birthWeight=$("birthWeight").value.trim();
+let calfStatus=$("calfStatus").value;
+let assist=$("calvingAssist").value;
+let sire=$("calfSire").value.trim();
+let notes=$("calvingNotes").value.trim();
+let detail=`Calved ${sex==="Bull Calf"?"bull":"heifer"} calf #${calfTag}${birthWeight?" — "+birthWeight+" lb":""}. ${assist}.${calfStatus!=="Alive"?" Status: "+calfStatus+".":""}${notes?" "+notes:""}`;
+let calf={id:"a"+Date.now(),tag:calfTag,sex,breed:dam.breed||"Angus",birth:date,dam:dam.tag,sire,status:calfStatus==="Alive"?"Nursing":"Dead",tagColor:$("calfTagColor").value,groupIds:[...(dam.groupIds||[])],events:[{type:"Birth",date,text:`Born to dam #${dam.tag}${birthWeight?" — "+birthWeight+" lb":""}. ${assist}.${notes?" "+notes:""}`}]};
+db.animals.push(calf);
+dam.events.push({type:"Calving",date,text:detail});
+dam.status="Open";
+db.calendar=db.calendar||[];
+db.calendar.push({id:"c"+Date.now(),date,type:"Calving",text:detail,animalIds:[dam.id,calf.id]});
+save();closeModal();renderHome();renderHerd();renderCalendar();toast("Calf #"+calfTag+" added");
+}
+function openRecord(type=null,preselected=[]){
+$("modalTitle").textContent=type?type+" Record":"Add Record";
+$("form").innerHTML=`<label>Who is this for?</label>${animalPicker(preselected,[])}<label>Record type</label><select id="rtype">${["Treatment","Vaccination","Breeding","Weight","Note"].map(x=>`<option ${x===type?"selected":""}>${x}</option>`).join("")}</select><label>Date</label><input id="rdate" type="date" value="${new Date().toISOString().slice(0,10)}"><label>Details</label><textarea id="rtext" placeholder="Example: Foot rot — Draxxin 5 cc each. Or: AI details, calf weight, vaccine, etc."></textarea><div class="actions"><button class="secondary" id="cancelR">Cancel</button><button class="primary" id="saveR">Save Record</button></div>`;
+showModal();
+$("pickSearch").addEventListener("input",()=>{$("pickList").innerHTML=pickerRows(new Set([...document.querySelectorAll(".pick:checked")].map(x=>x.value)))});
+$("cancelR").addEventListener("click",closeModal);
+$("saveR").addEventListener("click",saveRecord);
+}
+function saveRecord(){
+let ids=recordSelectedIds(),text=$("rtext").value.trim();
+if(!ids.length){toast("Select a group or animal");return}
+if(!text){$("rtext").focus();toast("Enter some details");return}
+let type=$("rtype").value,date=$("rdate").value;
+ids.forEach(id=>{let a=db.animals.find(x=>x.id===id);a.events.push({type,date,text});});
+db.calendar.push({id:"c"+Date.now(),date,type,text,animalIds:ids});
+save();closeModal();toast(ids.length+" animal"+(ids.length>1?"s":"")+" updated");
+selected.clear();selectMode=false;$("selectBtn").textContent="Select";updateMass();renderHome();renderHerd();renderCalendar();
+}
+function openEdit(id){
+let a=db.animals.find(x=>x.id===id);
+let oldGroups=[...(a.groupIds||[])];
+$("modalTitle").textContent="Edit #"+a.tag;
+$("form").innerHTML=`<label>Tag number</label><input id="tag" inputmode="numeric" value="${a.tag}"><div class="formrow"><div><label>Sex</label><select id="sex">${["Cow","Bull","Heifer","Bull Calf","Heifer Calf"].map(x=>`<option ${x===a.sex?"selected":""}>${x}</option>`).join("")}</select></div><div><label>Breed</label><input id="breed" value="${a.breed||""}"></div></div><div class="formrow"><div><label>Birth date</label><input id="birth" type="date" value="${a.birth||""}"></div><div><label>Status</label><input id="status" value="${a.status||""}"></div></div><div class="formrow"><div><label>Tag color</label><select id="tagColor">${Object.keys(colorMap).map(x=>`<option ${x===a.tagColor?"selected":""}>${x}</option>`).join("")}</select></div><div><label>Dam</label><input id="dam" value="${a.dam||""}"></div></div><label>Sire</label><input id="sire" value="${a.sire||""}"><label>Groups / pastures</label>${groupPicker(a.groupIds||[])}<div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="saveAnimal">Save Changes</button></div>`;
+showModal();$("cancel").addEventListener("click",closeModal);$("saveAnimal").addEventListener("click",()=>{a.tag=$("tag").value.trim();a.sex=$("sex").value;a.breed=$("breed").value.trim();a.birth=$("birth").value;a.status=$("status").value.trim();a.tagColor=$("tagColor").value;a.dam=$("dam").value.trim();a.sire=$("sire").value.trim();a.groupIds=[...document.querySelectorAll(".groupPick:checked")].map(x=>x.value);
+if(JSON.stringify(oldGroups)!==JSON.stringify(a.groupIds)){
+ let names=a.groupIds.map(id=>db.groups.find(g=>g.id===id)?.name).filter(Boolean);
+ db.calendar.push({id:"m"+Date.now(),date:new Date().toISOString().slice(0,10),type:"Move",text:"Group assignment changed to "+(names.join(", ")||"No group"),animalIds:[a.id],groupIds:a.groupIds});
+}
+save();closeModal();renderHerd();renderCalendar();toast("Animal updated")});
+}
+function groupPicker(ids){let set=new Set(ids);return `<div class="picker">${db.groups.length?db.groups.map(g=>`<label class="pickrow"><input class="groupPick" type="checkbox" value="${g.id}" ${set.has(g.id)?"checked":""}><span><b>${g.name}</b></span></label>`).join(""):'<div class="small">No groups yet.</div>'}</div>`}
+function openAdd(){
+$("modalTitle").textContent="Add Animal";
+$("form").innerHTML=`<label>Tag number</label><input id="tag" inputmode="numeric" placeholder="142" autofocus><div class="formrow"><div><label>Sex</label><select id="sex"><option>Cow</option><option>Bull</option><option>Heifer</option><option>Bull Calf</option><option>Heifer Calf</option></select></div><div><label>Breed</label><input id="breed" value="Angus"></div></div><div class="formrow"><div><label>Birth date</label><input id="birth" type="date"></div><div><label>Status</label><input id="status" placeholder="Bred"></div></div><div class="formrow"><div><label>Tag color</label><select id="tagColor">${Object.keys(colorMap).map(x=>`<option>${x}</option>`).join("")}</select></div><div><label>Dam</label><input id="dam" placeholder="83"></div></div><label>Sire</label><input id="sire" placeholder="Bull 17"><label>Starting group / pasture</label>${groupPicker([])}<div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="saveAnimal">Save Animal</button></div>`;
+showModal();$("cancel").addEventListener("click",closeModal);$("saveAnimal").addEventListener("click",saveAnimal);
+}
+function saveAnimal(){let tag=$("tag").value.trim();if(!tag){$("tag").focus();toast("Enter a tag number");return}db.animals.push({id:Date.now().toString(),tag,sex:$("sex").value,breed:$("breed").value.trim()||"Angus",birth:$("birth").value,status:$("status").value.trim(),tagColor:$("tagColor").value,dam:$("dam").value.trim(),sire:$("sire").value.trim(),groupIds:[...document.querySelectorAll(".groupPick:checked")].map(x=>x.value),events:[]});save();closeModal();go("herd");toast("Animal added")}
+function calendarEventAnimals(e){
+return (e.animalIds||[]).map(id=>db.animals.find(a=>a.id===id)).filter(Boolean);
+}
+function renderCalendar(){
+let all=[...(db.calendar||[])];
+db.animals.forEach(a=>a.events.forEach(e=>{
+ if(!all.some(x=>x.type===e.type&&x.date===e.date&&x.animalIds?.includes(a.id))){
+   all.push({id:"hist"+a.id+e.date+e.type,type:e.type,date:e.date,text:e.text,animalIds:[a.id]});
+ }
+}));
+all.sort((a,b)=>a.date.localeCompare(b.date));
+let today=new Date().toISOString().slice(0,10);
+let upcoming=all.filter(e=>e.date>=today).slice(0,10);
+$("upcomingBody").innerHTML=upcoming.map(calendarCard).join("")||'<div class="empty">Nothing upcoming. Add a dated record to build your ranch timeline.</div>';
+let by={};all.forEach(e=>(by[e.date]??=[]).push(e));
+let dates=Object.keys(by).reverse();
+$("calendarBody").innerHTML=dates.map(d=>`<div class="section-title">${dateText(d)} ${d===today?"· Today":""}</div>${by[d].map(calendarCard).join("")}`).join("")||'<div class="empty">No activity recorded yet.</div>';
+document.querySelectorAll("[data-cal]").forEach(x=>x.addEventListener("click",()=>openCalendarItem(x.dataset.cal)));
+}
+function calendarCard(e){
+let animals=calendarEventAnimals(e),tags=animals.map(a=>a.tag);
+return `<button class="animal" style="width:100%;text-align:left" data-cal="${e.id}">
+<span class="badge">${e.type}</span>
+<b>${e.text}</b>
+<div class="meta">${animals.length?animals.length+" head · #"+tags.slice(0,8).join(", #"):"Ranch event"}</div>
+${animals.length>8?`<div class="small">+${animals.length-8} more</div>`:""}
+</button>`;
+}
+function openCalendarItem(id){
+let e=(db.calendar||[]).find(x=>x.id===id);
+if(!e){toast("Historical record");return}
+let animals=calendarEventAnimals(e);
+$("modalTitle").textContent=e.type+" · "+dateText(e.date);
+$("form").innerHTML=`<div class="detail-card"><b>${e.text}</b><div class="meta">${animals.length} animal${animals.length===1?"":"s"} involved</div></div>
+<div class="section-title">Animals</div>${animals.map(a=>`<div class="animal"><b>#${a.tag}</b><div class="meta">${a.sex} · ${a.breed} · ${a.status||""}</div></div>`).join("")||'<div class="empty">No individual animals linked.</div>'}
+<div class="actions"><button class="secondary" id="closeCalItem">Close</button><button class="primary" id="openFirst">Open Animal</button></div>`;
+showModal();
+$("closeCalItem").addEventListener("click",closeModal);
+$("openFirst").addEventListener("click",()=>{if(animals[0]){closeModal();openAnimal(animals[0].id)}else toast("No animal linked")});
+}
+function renderGroups(){
+$("groupsList").innerHTML=db.groups.map(g=>{
+ let animals=db.animals.filter(a=>(a.groupIds||[]).includes(g.id));
+ return `<div class="group">
+   <span class="count">${animals.length} head</span>
+   <b>${g.name}</b>
+   <div class="meta">${animals.length?animals.slice(0,6).map(a=>"#"+a.tag).join(", ")+(animals.length>6?" …":""):"No cattle assigned"}</div>
+   <div class="group-actions">
+     <button data-gadd="${g.id}">＋ Add</button>
+     <button data-gremove="${g.id}">− Remove</button>
+     <button class="movebtn" data-gmove="${g.id}">⇄ Move</button>
+   </div>
+   <button class="secondary full" data-group="${g.id}" style="margin-top:8px;min-height:44px">View Group</button>
+ </div>`;
+}).join("")||'<div class="empty">No groups yet. Create your first pasture or pen.</div>';
+
+document.querySelectorAll("[data-group]").forEach(b=>b.addEventListener("click",()=>openGroup(b.dataset.group)));
+document.querySelectorAll("[data-gadd]").forEach(b=>b.addEventListener("click",()=>openAddToGroup(b.dataset.gadd)));
+document.querySelectorAll("[data-gremove]").forEach(b=>b.addEventListener("click",()=>openRemoveFromGroup(b.dataset.gremove)));
+document.querySelectorAll("[data-gmove]").forEach(b=>b.addEventListener("click",()=>openMoveFromGroup(b.dataset.gmove)));
+}
+
+function openGroup(id){
+let g=db.groups.find(x=>x.id===id);
+let animals=db.animals.filter(a=>(a.groupIds||[]).includes(id));
+$("modalTitle").textContent=g.name;
+$("form").innerHTML=`
+<div class="detail-card"><b>${animals.length} head</b><div class="meta">Manage this group without leaving the page.</div></div>
+<div class="quick">
+  <button class="qbtn" id="groupAdd"><span class="ico">＋</span>Add cattle</button>
+  <button class="qbtn" id="groupRemove"><span class="ico">−</span>Remove cattle</button>
+  <button class="qbtn" id="groupMove"><span class="ico">⇄</span>Move cattle</button>
+  <button class="qbtn" id="groupMoveAll"><span class="ico">↪</span>Move all ${animals.length}</button>
+</div>
+<div class="section-title">Cattle in this group</div>
+<div>${animals.map(a=>`<div class="animal"><b>#${a.tag}</b><div class="meta">${a.sex} · ${a.breed} · ${a.status||""}</div></div>`).join("")||'<div class="empty">No animals in this group.</div>'}</div>
+<div class="actions"><button class="secondary" id="closeG">Close</button><button class="danger" id="deleteG">Delete Group</button></div>`;
+showModal();
+$("closeG").addEventListener("click",closeModal);
+$("groupAdd").addEventListener("click",()=>openAddToGroup(id));
+$("groupRemove").addEventListener("click",()=>openRemoveFromGroup(id));
+$("groupMove").addEventListener("click",()=>openMoveFromGroup(id));
+$("groupMoveAll").addEventListener("click",()=>openMoveAllGroup(id));
+$("deleteG").addEventListener("click",()=>{
+ if(confirm("Delete this group? Animals will not be deleted.")){
+   db.groups=db.groups.filter(x=>x.id!==id);
+   db.animals.forEach(a=>a.groupIds=(a.groupIds||[]).filter(x=>x!==id));
+   save();closeModal();renderGroups();toast("Group deleted");
+ }
+});
+}
+
+function groupAnimalPicker(ids, onlyGroupId=null){
+let source=onlyGroupId?db.animals.filter(a=>(a.groupIds||[]).includes(onlyGroupId)):db.animals;
+let selectedIds=new Set(ids||[]);
+return `<div class="picker">
+<input id="gSearch" placeholder="Search tag, breed, status…">
+<div class="picklist" id="gPickList">${groupPickerRows(source,selectedIds,"")}</div>
+</div>`;
+}
+function groupPickerRows(source,selectedIds,q){
+q=(q||"").toLowerCase();
+return source.filter(a=>(a.tag+" "+a.breed+" "+a.sex+" "+a.status).toLowerCase().includes(q)).map(a=>`<label class="pickrow"><input type="checkbox" class="gAnimalPick" value="${a.id}" ${selectedIds.has(a.id)?"checked":""}><span><b>#${a.tag}</b> · ${a.sex}<br><span class="small">${a.breed} · ${a.status||""}</span></span></label>`).join("")||'<div class="empty">No animals match.</div>';
+}
+function chosenGroupAnimals(){return [...document.querySelectorAll(".gAnimalPick:checked")].map(x=>x.value)}
+
+function openAddToGroup(groupId){
+let g=db.groups.find(x=>x.id===groupId);
+let eligible=db.animals.filter(a=>!(a.groupIds||[]).includes(groupId));
+$("modalTitle").textContent="Add to "+g.name;
+$("form").innerHTML=`<div class="detail-card"><b>Select cattle to add</b><div class="meta">This adds the group without removing any other groups the animal belongs to.</div></div>${groupAnimalPicker([],null)}<div class="actions"><button class="secondary" id="cancelGroupAction">Cancel</button><button class="primary" id="applyGroupAction">Add cattle</button></div>`;
+showModal();
+wireGroupSearch(eligible);
+$("cancelGroupAction").addEventListener("click",closeModal);
+$("applyGroupAction").addEventListener("click",()=>{
+ let ids=chosenGroupAnimals();
+ if(!ids.length){toast("Select cattle");return}
+ ids.forEach(id=>{let a=db.animals.find(x=>x.id===id);a.groupIds=a.groupIds||[];if(!a.groupIds.includes(groupId))a.groupIds.push(groupId)});
+ logMove(ids,"Added to "+g.name,groupId);
+ save();closeModal();renderGroups();renderCalendar();toast(ids.length+" added");
+});
+}
+
+function openRemoveFromGroup(groupId){
+let g=db.groups.find(x=>x.id===groupId);
+let source=db.animals.filter(a=>(a.groupIds||[]).includes(groupId));
+$("modalTitle").textContent="Remove from "+g.name;
+$("form").innerHTML=`<div class="detail-card"><b>Select cattle to remove</b><div class="meta">This removes them from ${g.name}. It does not delete their records.</div></div>${groupAnimalPicker([],groupId)}<div class="actions"><button class="secondary" id="cancelGroupAction">Cancel</button><button class="danger" id="applyGroupAction">Remove cattle</button></div>`;
+showModal();
+wireGroupSearch(source);
+$("cancelGroupAction").addEventListener("click",closeModal);
+$("applyGroupAction").addEventListener("click",()=>{
+ let ids=chosenGroupAnimals();
+ if(!ids.length){toast("Select cattle");return}
+ ids.forEach(id=>{let a=db.animals.find(x=>x.id===id);a.groupIds=(a.groupIds||[]).filter(x=>x!==groupId)});
+ logMove(ids,"Removed from "+g.name,groupId);
+ save();closeModal();renderGroups();renderCalendar();toast(ids.length+" removed");
+});
+}
+
+function openMoveFromGroup(groupId){
+let from=db.groups.find(x=>x.id===groupId);
+let source=db.animals.filter(a=>(a.groupIds||[]).includes(groupId));
+let destinations=db.groups.filter(g=>g.id!==groupId);
+if(!destinations.length){toast("Create another group first");return}
+$("modalTitle").textContent="Move from "+from.name;
+$("form").innerHTML=`<div class="detail-card"><b>Move cattle in one step</b><div class="meta">Selected cattle will be removed from ${from.name} and added to the destination group.</div></div>
+<label>Move to</label><select id="moveDest">${destinations.map(g=>`<option value="${g.id}">${g.name}</option>`).join("")}</select>
+<label>Select cattle</label>${groupAnimalPicker([],groupId)}
+<div class="actions"><button class="secondary" id="cancelGroupAction">Cancel</button><button class="primary" id="applyGroupAction">Move cattle</button></div>`;
+showModal();
+wireGroupSearch(source);
+$("cancelGroupAction").addEventListener("click",closeModal);
+$("applyGroupAction").addEventListener("click",()=>{
+ let ids=chosenGroupAnimals(),destId=$("moveDest").value,dest=db.groups.find(g=>g.id===destId);
+ if(!ids.length){toast("Select cattle");return}
+ ids.forEach(id=>{
+   let a=db.animals.find(x=>x.id===id);
+   a.groupIds=(a.groupIds||[]).filter(x=>x!==groupId);
+   if(!a.groupIds.includes(destId))a.groupIds.push(destId);
+ });
+ logMove(ids,"Moved from "+from.name+" to "+dest.name,destId);
+ save();closeModal();renderGroups();renderCalendar();toast(ids.length+" moved");
+});
+}
+
+function openMoveAllGroup(groupId){
+let from=db.groups.find(x=>x.id===groupId);
+let ids=db.animals.filter(a=>(a.groupIds||[]).includes(groupId)).map(a=>a.id);
+let destinations=db.groups.filter(g=>g.id!==groupId);
+if(!ids.length){toast("No cattle in this group");return}
+if(!destinations.length){toast("Create another group first");return}
+$("modalTitle").textContent="Move all "+ids.length+" head";
+$("form").innerHTML=`<div class="detail-card"><b>Move every animal in ${from.name}</b><div class="meta">${ids.length} head will be transferred to the selected destination.</div></div><label>Move to</label><select id="moveDest">${destinations.map(g=>`<option value="${g.id}">${g.name}</option>`).join("")}</select><div class="actions"><button class="secondary" id="cancelGroupAction">Cancel</button><button class="primary" id="applyGroupAction">Move all ${ids.length}</button></div>`;
+showModal();
+$("cancelGroupAction").addEventListener("click",closeModal);
+$("applyGroupAction").addEventListener("click",()=>{
+ let destId=$("moveDest").value,dest=db.groups.find(g=>g.id===destId);
+ ids.forEach(id=>{
+   let a=db.animals.find(x=>x.id===id);
+   a.groupIds=(a.groupIds||[]).filter(x=>x!==groupId);
+   if(!a.groupIds.includes(destId))a.groupIds.push(destId);
+ });
+ logMove(ids,"Moved all from "+from.name+" to "+dest.name,destId);
+ save();closeModal();renderGroups();renderCalendar();toast(ids.length+" moved");
+});
+}
+function wireGroupSearch(source){
+let input=$("gSearch");
+if(!input)return;
+input.addEventListener("input",()=>{
+ let checked=new Set([...document.querySelectorAll(".gAnimalPick:checked")].map(x=>x.value));
+ $("gPickList").innerHTML=groupPickerRows(source,checked,input.value);
+});
+}
+function logMove(ids,text,groupId){
+db.calendar=db.calendar||[];
+db.calendar.push({id:"m"+Date.now(),date:new Date().toISOString().slice(0,10),type:"Move",text,animalIds:ids,groupId});
+}
+
+$("addGroupBtn").addEventListener("click",()=>{
+ $("modalTitle").textContent="New Group / Pasture";
+ $("form").innerHTML=`<label>Group name</label><input id="gname" placeholder="North Pasture"><div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="saveG">Create Group</button></div>`;
+ showModal();
+ $("cancel").addEventListener("click",closeModal);
+ $("saveG").addEventListener("click",()=>{
+   let name=$("gname").value.trim();
+   if(!name){toast("Enter a group name");return}
+   db.groups.push({id:"g"+Date.now(),name,color:"#6b8e5a"});
+   save();closeModal();renderGroups();toast("Group created");
+ });
+});
+$("massRecord").addEventListener("click",()=>openRecord(null,[...selected]));
+$("massMove").addEventListener("click",()=>{
+ let ids=[...selected];
+ if(!db.groups.length){toast("Create a group first");return}
+ $("modalTitle").textContent="Move Selected Animals";
+ $("form").innerHTML=`<div class="detail-card"><b>${ids.length} head selected</b><div class="meta">Choose the destination group.</div></div><label>Move to group / pasture</label><select id="moveGroup">${db.groups.map(g=>`<option value="${g.id}">${g.name}</option>`).join("")}</select><div class="actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="moveNow">Move</button></div>`;
+ showModal();
+ $("cancel").addEventListener("click",closeModal);
+ $("moveNow").addEventListener("click",()=>{
+   let gid=$("moveGroup").value,dest=db.groups.find(g=>g.id===gid);
+   ids.forEach(id=>{let a=db.animals.find(x=>x.id===id);a.groupIds=[gid]});
+   logMove(ids,"Moved to "+dest.name,gid);
+   save();selected.clear();selectMode=false;$("selectBtn").textContent="Select";updateMass();closeModal();renderHerd();renderGroups();renderCalendar();toast(ids.length+" animals moved");
+ });
+});
+$("addBtn").addEventListener("click",openAdd);$("reset").addEventListener("click",()=>{if(confirm("Reset all sample data?")){localStorage.removeItem(KEY);location.reload()}});
+$("modal").addEventListener("click",e=>{if(e.target===$("modal")){if(modalIsPristine())closeModal();else toast("Use Cancel if you want to discard changes")}});
+function modalState(){
+return JSON.stringify([...$("form").querySelectorAll("input,select,textarea")].map(el=>({id:el.id||el.name||"",value:el.value,checked:("checked" in el)?el.checked:null})));
+}
+function modalIsPristine(){return modalState()===modalInitialState}
+function showModal(){
+$("modal").classList.add("show");document.body.style.overflow="hidden";
+requestAnimationFrame(()=>{modalInitialState=modalState();});
+}
+function closeModal(){$("modal").classList.remove("show");document.body.style.overflow="";$("sheet")?.style.removeProperty("transform")}
+function wireSheetSwipe(){
+let sheet=document.querySelector(".sheet");
+if(!sheet||sheet.dataset.swipeWired)return;
+sheet.dataset.swipeWired="1";
+sheet.addEventListener("touchstart",e=>{if(sheet.scrollTop>0)return;sheetTouchStartY=e.touches[0].clientY;sheetTouchLastY=sheetTouchStartY;},{passive:true});
+sheet.addEventListener("touchmove",e=>{if(!sheetTouchStartY||sheet.scrollTop>0)return;sheetTouchLastY=e.touches[0].clientY;let dy=Math.max(0,sheetTouchLastY-sheetTouchStartY);if(dy>0&&modalIsPristine())sheet.style.transform=`translateY(${Math.min(140,dy)}px)`;},{passive:true});
+sheet.addEventListener("touchend",()=>{if(!sheetTouchStartY)return;let dy=sheetTouchLastY-sheetTouchStartY;sheet.style.transform="";if(dy>85){if(modalIsPristine())closeModal();else toast("Use Cancel if you want to discard changes");}sheetTouchStartY=0;sheetTouchLastY=0;});
+}
+
+function toast(t){$("toast").textContent=t;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",1600)}
+renderHome();renderHerd();renderGroups();renderCalendar();wireSheetSwipe();
+</script>
+</body></html>
